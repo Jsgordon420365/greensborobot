@@ -1,4 +1,4 @@
-<!-- ver 20250322140115.0 -->
+<!-- ver 20250322144840.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,5 +31,12 @@
       <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Send</button>
     </form>
   </main>
+
+  <!-- Hidden dummy form for Netlify form detection -->
+  <form name="contact" netlify hidden>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <textarea name="message"></textarea>
+  </form>
 </body>
 </html>
