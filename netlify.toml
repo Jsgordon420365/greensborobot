@@ -1,6 +1,9 @@
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
+# ver 20250322140115.0
 [build]
-  publish = ".next"
-  command = "npm run build"
+  publish = "./"
+  command = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
