@@ -1,7 +1,10 @@
-# ver 20250322140115.0
+# ver 20250322143730.1
 [build]
   publish = "./"
-  command = ""
+  command = "echo 'No build needed'"
+
+[context.production.environment]
+  NODE_VERSION = ""
 
 [[redirects]]
   from = "/*"
