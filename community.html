@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreensboroBot - Community</title>
+    <style>
+        :root {
+            --primary: #21A366;
+            --primary-dark: #157348;
+            --secondary: #F8F9FA;
+            --text-dark: #212529;
+            --text-light: #6C757D;
+            --border: #DEE2E6;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--secondary);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        p {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .section {
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .card-footer {
+            background-color: rgba(0, 0, 0, 0.03);
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 4px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            color: white;
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            color: var(--primary);
+            background-color: transparent;
+            border-color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            color: white;
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 992px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .icon-box {
+            flex: 0 0 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .feature-content {
+            flex: 1;
+            padding: 1.5rem;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 3rem auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -13px;
+            background-color: white;
+            border: 4px solid var(--primary);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid var(--border);
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent white;
+        }
+        
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid var(--border);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent white transparent transparent;
+        }
+        
+        .right::after {
+            left: -12px;
+        }
+        
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::before {
+                left: 60px;
+                border: medium solid white;
+                border-width: 10px 10px 10px 0;
+                border-color: transparent white transparent transparent;
+            }
+            
+            .left::after, .right::after {
+                left: 18px;
+            }
+            
+            .right {
+                left: 0%;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--text-dark);
+            background-color: white;
+            background-clip: padding-box;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(33, 163, 102, 0.25);
+        }
+        
+        .forum-post {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .post-user {
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+        
+        .post-meta {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .post-body {
+            padding: 1.5rem;
+        }
+        
+        .post-footer {
+            padding: 0.75rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary);
+        }
+        
+        .rounded-circle {
+            border-radius: 50%;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        
+        .col {
+            flex-basis: 0;
+            flex-grow: 1;
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="section">
+            <h1>Community Knowledge Exchange</h1>
+            <p class="text-center mb-5">Join our growing network of Greensboro professionals and students collaborating to responsibly embrace AI technologies.</p>
+        </header>
+        
+        <!-- Community Features Section -->
+        <section class="section">
+            <h2>Why Join Our Community?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i>💬</i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Peer Support Network</h3>
+                        <p>Connect with local professionals and students who are navigating the same AI landscape. Get answers to your implementation questions from those who've been there.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i>🔍</i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Real-World Case Studies</h3>
+                        <p>Learn from Greensboro businesses already implementing AI solutions. See what works, what doesn't, and how to apply these lessons to your own projects.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i>📚</i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Resource Library</h3>
+                        <p>Access our curated collection of guides, templates, and case studies not available to the general public, specifically tailored for Greensboro's unique business environment.</p>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i>🗓️</i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Local Events & Workshops</h3>
+                        <p>Stay informed about AI-focused meetups, workshops, and training sessions happening in Greensboro. Network with peers and experts in person.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Community Forums Preview -->
+        <section class="section">
+            <h2>Community Discussions</h2>
+            <p>Preview of recent conversations in our community forum. Join to participate!</p>
+            
+            <div class="forum-post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="post-avatar">JD</div>
+                        <div>
+                            <strong>John Doe</strong>
+                            <div class="post-meta">Small Business Owner</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-primary">Question</span>
+                </div>
+                <div class="post-body">
+                    <h4>Implementing Claude AI for Customer Support</h4>
+                    <p>Has anyone in the Greensboro area implemented Claude or similar AI assistants for handling customer inquiries? I run a small retail business and I'm looking to automate some of the repetitive questions we get.</p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-meta">Posted 2 days ago</span>
+                    <span>4 replies</span>
+                </div>
+            </div>
+            
+            <div class="forum-post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="post-avatar">SM</div>
+                        <div>
+                            <strong>Sarah Mitchell</strong>
+                            <div class="post-meta">Marketing Professional</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-primary">Resource</span>
+                </div>
+                <div class="post-body">
+                    <h4>Free AI Tools for Small Marketing Teams</h4>
+                    <p>I've compiled a list of free AI tools that have worked well for our small marketing team. These are perfect for Greensboro businesses looking to dip their toes into AI without breaking the bank.</p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-meta">Posted 5 days ago</span>
+                    <span>7 replies</span>
+                </div>
+            </div>
+            
+            <div class="forum-post">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="post-avatar">TJ</div>
+                        <div>
+                            <strong>Taylor Johnson</strong>
+                            <div class="post-meta">UNCG Student</div>
+                        </div>
+                    </div>
+                    <span class="badge badge-primary">Event</span>
+                </div>
+                <div class="post-body">
+                    <h4>AI Study Group at UNCG - Open to Community</h4>
+                    <p>A group of us at UNCG are organizing a weekly AI study group that will be open to community members as well. We'll be focusing on practical applications of machine learning and AI tools for business and creative projects.</p>
+                </div>
+                <div class="post-footer">
+                    <span class="post-meta">Posted 1 week ago</span>
+                    <span>12 replies</span>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="#" class="btn btn-primary">Join the Community</a>
+            </div>
+        </section>
+        
+        <!-- Upcoming Events -->
+        <section class="section">
+            <h2>Upcoming Community Events</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>AI Tools Workshop</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> April 15, 2025</p>
+                        <p><strong>Location:</strong> Greensboro Central Library</p>
+                        <p><strong>Time:</strong> 6:00 PM - 8:00 PM</p>
+                        <p>A hands-on workshop covering the top 5 AI tools for small businesses. Bring your laptop and be ready to implement these tools in real-time.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-outline">Register</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ethical AI Panel Discussion</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> April 22, 2025</p>
+                        <p><strong>Location:</strong> UNCG School of Business</p>
+                        <p><strong>Time:</strong> 5:30 PM - 7:30 PM</p>
+                        <p>Join local business leaders and academics for a discussion on implementing AI ethically in local businesses and organizations.</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-outline">Register</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Virtual Office Hours</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> Every Thursday</p>
+                        <p><strong>Location:</strong> Zoom</p>
+                        <p><strong>Time:</strong> 12:00 PM - 1:00 PM</p>
+                        <p>Drop in for our weekly virtual office hours where you can ask questions and get help with your AI implementation challenges.</p>
+                    </div>
+                    <div class="card-footer">
+                      
