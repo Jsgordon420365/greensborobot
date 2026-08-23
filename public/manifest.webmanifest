@@ -1,0 +1,22 @@
+{
+  "name": "Nagimals",
+  "short_name": "Nagimals",
+  "description": "A small household of persistent virtual animals and plants that stand for your active responsibilities.",
+  "start_url": "./index.html#/household",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#14110f",
+  "theme_color": "#e8a341",
+  "categories": ["productivity", "lifestyle"],
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/badge-72.png", "sizes": "72x72", "type": "image/png", "purpose": "monochrome" }
+  ],
+  "shortcuts": [
+    { "name": "Household", "url": "./index.html#/household" },
+    { "name": "Place my Nagimals", "url": "./index.html#/ar" }
+  ]
+}

@@ -1,12 +1,31 @@
-# ver 20250322143730.1
 [build]
-  publish = "./"
-  command = "echo 'No build needed'"
+  command = "npm run build"
+  publish = "dist"
 
-[context.production.environment]
-  NODE_VERSION = ""
+[build.environment]
+  NODE_VERSION = "22"
 
+# Single-page application: every unmatched path renders the app shell so a
+# deep link or a refresh lands on the household rather than a 404.
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The service worker must never be served stale, otherwise a deploy cannot
+# replace the cached shell and returning visitors stay on the old build.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Vite emits content-hashed asset filenames, so they are safe to cache hard.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

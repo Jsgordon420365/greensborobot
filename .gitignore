@@ -6,19 +6,13 @@
 .pnp.js
 pnpm-lock.yaml
 
-# stackbit
-.cache
-.stackbit/cache
-
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-
 # production
 /build
+/dist
+test-results
 
 # misc
 .DS_Store
@@ -41,3 +35,6 @@ yarn-error.log*
 # IDE
 *.code-workspace
 .idea
+
+# TypeScript incremental build state
+*.tsbuildinfo
