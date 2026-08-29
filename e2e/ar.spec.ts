@@ -11,8 +11,8 @@ import { mockImmersiveArSupport, mockNoArSupport } from './fixtures/mockWebXR';
 async function enterAr(page: import('@playwright/test').Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'Open Demo Household' }).click();
-  await page.getByRole('navigation').getByRole('button', { name: 'Place my Nagimals' }).click();
-  await expect(page.getByRole('heading', { name: 'Place my Nagimals' })).toBeVisible();
+  await page.getByRole('navigation').getByRole('button', { name: 'See in my room' }).click();
+  await expect(page.getByRole('heading', { name: 'See them in my room' })).toBeVisible();
 }
 
 /**
@@ -27,7 +27,7 @@ test.describe('AR pathways', () => {
     await mockImmersiveArSupport(page);
     await enterAr(page);
 
-    await expect(inMain(page).getByRole('button', { name: 'Place My Nagimals' })).toBeVisible();
+    await expect(inMain(page).getByRole('button', { name: 'Start the camera' })).toBeVisible();
     await expect(page.getByText(/Point the camera at a floor or table/)).toBeVisible();
   });
 
@@ -35,7 +35,7 @@ test.describe('AR pathways', () => {
     await mockNoArSupport(page);
     await enterAr(page);
 
-    await expect(inMain(page).getByRole('button', { name: 'Place My Nagimals' })).toHaveCount(0);
+    await expect(inMain(page).getByRole('button', { name: 'Start the camera' })).toHaveCount(0);
     await expect(page.getByText(/interactive 3D view/)).toBeVisible();
     // The interactive fallback must still be a real canvas, not a dead box.
     await expect(page.locator('.viewer canvas')).toBeVisible();

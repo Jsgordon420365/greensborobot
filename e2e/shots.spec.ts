@@ -8,7 +8,7 @@ test('capture the principal screens', async ({ page }) => {
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Open Demo Household' }).click();
-  await page.getByRole('navigation').getByRole('button', { name: 'Place my Nagimals' }).click();
+  await page.getByRole('navigation').getByRole('button', { name: 'See in my room' }).click();
   await page.waitForTimeout(3000);
   await page.locator('.viewer').screenshot({ path: '/tmp/shots/5a-viewer-calm.png' });
 
@@ -17,7 +17,7 @@ test('capture the principal screens', async ({ page }) => {
     localStorage.setItem('nagimals.timeOffsetMs', String(10 * 24 * 60 * 60 * 1000)),
   );
   await page.reload();
-  await page.getByRole('navigation').getByRole('button', { name: 'Place my Nagimals' }).click();
+  await page.getByRole('navigation').getByRole('button', { name: 'See in my room' }).click();
   await page.waitForTimeout(3000);
   await page.locator('.viewer').screenshot({ path: '/tmp/shots/5b-viewer-escalated.png' });
 });
