@@ -138,7 +138,7 @@ export function App() {
             disabled={!snapshot}
             aria-current={route === 'ar' ? 'page' : undefined}
           >
-            Place my Nagimals
+            See in my room
           </button>
           <button
             type="button"
@@ -219,7 +219,7 @@ export function App() {
 
         {!booting && route === 'ar' && snapshot && (
           <section className="stack" aria-labelledby="ar-heading">
-            <h1 id="ar-heading">Place my Nagimals</h1>
+            <h1 id="ar-heading">See them in my room</h1>
             <SceneBoundary
               fallback={
                 <Banner variant="error">

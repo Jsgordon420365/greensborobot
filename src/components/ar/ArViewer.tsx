@@ -1,5 +1,5 @@
 /**
- * "Place My Nagimals".
+ * "See in my room" — the augmented reality view.
  *
  * One component covers all four pathways. Which one runs is decided once by
  * `detectArCapability`, so the AR control is never shown when it would not
@@ -153,7 +153,7 @@ export function ArViewer({ snapshot }: ViewerProps) {
       <div className="btn-row">
         {canEnterAr && !inSession && (
           <button type="button" className="btn btn--primary" onClick={() => void beginSession()}>
-            Place My Nagimals
+            Start the camera
           </button>
         )}
         {inSession && (
