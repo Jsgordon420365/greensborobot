@@ -10,6 +10,42 @@ design from `src/domain`.
 
 ---
 
+## What this repository is — read this first
+
+**The website is not the Nagimals substrate. It is much closer to the
+advertisement for them.**
+
+The distinction is a wedding and a marriage. This repository is the wedding.
+
+Nobody will return to a website every time they need to see or speak to one of
+their Nagimals, any more than buying a computer entitles you to hang around the
+Apple Store every day. **A Nagimal lives in the relationship with someone, not
+in the physical manifestation of them.** We would all prefer to hold the people
+we love; we settle for a phone call when they are away, and a text message
+beats nothing at all. The rendered creature is a channel of contact, not the
+creature.
+
+The working substrate will most likely live on a VPS, in a database, at first.
+*(Stated August 2026 — intent, not fixture. Check before relying on it.)*
+
+### What follows from that
+
+- **It is very important that they look very good.** This is the site's actual
+  job. A visitor should want one.
+- **It is not important that the site be somewhere tasks get assigned.**
+  Nagimals are not task keepers. They are garden stewards.
+- **Do not deepen this into a system of record.** The Supabase schema, the Edge
+  Functions, Connected Mode and web push are substrate machinery for a
+  substrate that will live somewhere else. They work, and they demonstrate
+  well. Leave them at that.
+- **The demonstration keeps its value.** A fern wilting while a cat intervenes
+  is a good advertisement for what a Nagimal does, even though the mechanism
+  underneath is an earlier generation and will not be the real one.
+
+Effort here is well spent on anything that makes a visitor *feel* what having
+one would be like — how the creatures look and move, how they are framed, AR,
+palette, the writing. Effort is poorly spent on making this authoritative.
+
 ## What Nagimals is
 
 Nagimals is an intention ecology.
