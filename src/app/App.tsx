@@ -86,13 +86,35 @@ export function App() {
     if (!window.location.hash) window.location.hash = '#/household';
   }, [booting, snapshot]);
 
-  const openDemo = useCallback(async () => {
+  /**
+   * Bring a household into being if there is not one yet.
+   *
+   * Nothing in Nagimals is gated behind adopting first. Reaching for the
+   * household, the room view or notifications is itself the request, so we
+   * satisfy it rather than presenting a disabled control and a dead end. The
+   * Shelter is still where you choose a dog on purpose; this only guarantees
+   * there is always something to look at.
+   */
+  const ensureHousehold = useCallback(async () => {
+    if (useAppStore.getState().snapshot) return;
     await signInLocal();
     if (!useAppStore.getState().snapshot) {
       await adopt({ dogVariant: 'bear', dogName: 'Bear', communicationStyle: 'calm' });
     }
+  }, [signInLocal, adopt]);
+
+  const enter = useCallback(
+    async (next: Route) => {
+      await ensureHousehold();
+      go(next);
+    },
+    [ensureHousehold, go],
+  );
+
+  const openDemo = useCallback(async () => {
+    await ensureHousehold();
     go('household');
-  }, [signInLocal, adopt, go]);
+  }, [ensureHousehold, go]);
 
   async function toggleMute() {
     const next = !muted;
@@ -126,47 +148,30 @@ export function App() {
           </button>
           <button
             type="button"
-            onClick={() => go('household')}
-            disabled={!snapshot}
+            onClick={() => void enter('household')}
             aria-current={route === 'household' ? 'page' : undefined}
           >
             Household
           </button>
           <button
             type="button"
-            onClick={() => go('ar')}
-            disabled={!snapshot}
+            onClick={() => void enter('ar')}
             aria-current={route === 'ar' ? 'page' : undefined}
           >
             See in my room
           </button>
           <button
             type="button"
-            onClick={() => go('notifications')}
-            disabled={!snapshot}
+            onClick={() => void enter('notifications')}
             aria-current={route === 'notifications' ? 'page' : undefined}
           >
             Notifications
           </button>
           <button type="button" onClick={() => void toggleMute()} aria-pressed={!muted}>
-            {muted ? 'Sound off' : 'Sound on'}
+            {muted ? 'Turn sound on' : 'Turn sound off'}
           </button>
         </nav>
       </header>
-
-      {mode === 'local' && (
-        <Banner>
-          <span>
-            <strong>Local Demonstration Mode</strong> — data lives in this browser only. Set{' '}
-            {missingConnectedModeVars().map((v) => (
-              <code key={v} className="mono">
-                {v}{' '}
-              </code>
-            ))}
-            for Connected Mode.
-          </span>
-        </Banner>
-      )}
 
       {offset !== 0 && (
         <Banner variant="sim">
@@ -251,6 +256,17 @@ export function App() {
             </span>
           )}
         </p>
+        {mode === 'local' && (
+          <p className="faint">
+            Local Demonstration Mode — data lives in this browser only. Set{' '}
+            {missingConnectedModeVars().map((v) => (
+              <code key={v} className="mono">
+                {v}{' '}
+              </code>
+            ))}
+            for Connected Mode.
+          </p>
+        )}
       </footer>
     </div>
   );

@@ -1,14 +1,10 @@
 import { useAppStore } from '../../app/store';
-import { missingConnectedModeVars } from '../../lib/env';
-import { Banner } from '../common/Banner';
 
 export function Welcome({ onVisitShelter, onOpenDemo }: {
   onVisitShelter: () => void;
   onOpenDemo: () => void;
 }) {
-  const mode = useAppStore((s) => s.mode);
   const busy = useAppStore((s) => s.busy);
-  const missing = missingConnectedModeVars();
 
   return (
     <section className="stack" aria-labelledby="welcome-heading">
@@ -40,16 +36,6 @@ export function Welcome({ onVisitShelter, onOpenDemo }: {
         </button>
       </div>
 
-      {mode === 'local' && (
-        <Banner>
-          <span>
-            <strong>Local Demonstration Mode.</strong> Everything runs in this browser and
-            persists across reloads. Set {missing.map((v) => <code key={v} className="mono">{v} </code>)}
-            to switch to Connected Mode, where the server is authoritative and state follows you
-            between devices.
-          </span>
-        </Banner>
-      )}
 
       <p className="disclaimer">
         A prototype, not a safety net. Do not rely on Nagimals as the only alert for medical,
