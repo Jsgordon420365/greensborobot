@@ -11,6 +11,12 @@ reading the code a closed loop: you will come away confident and wrong.
 `CONCEPT.md` is the current canon and is dated. Read it before reasoning about
 the domain model, the rules engine, or what any creature is *for*.
 
+Its first section is the one most likely to save you from wasted work: **this
+website is the advertisement for Nagimals, not the substrate they live in.**
+The job here is to make a visitor want one, so how the creatures look and move
+matters more than whether this is a faithful system of record. It is not one,
+and it is not becoming one.
+
 ## Treat remembered context as potentially stale
 
 This applies to more than this repository. Infrastructure, tool availability,
