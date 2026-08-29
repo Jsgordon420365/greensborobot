@@ -317,7 +317,13 @@ legend { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); padding
   overflow: hidden;
   background: linear-gradient(180deg, var(--bg-sunken), var(--bg-raised));
   border: 1px solid var(--border);
-  touch-action: none;
+  /*
+    pan-y, never none. The viewer is a 4:3 block that fills most of a phone
+    screen, so touch-action: none handed every gesture to the canvas and left
+    the page scrollable only in the thin gaps between viewers. Vertical drags
+    now scroll the page; the canvas still receives horizontal drags to orbit.
+  */
+  touch-action: pan-y;
 }
 .viewer canvas { display: block; width: 100% !important; height: 100% !important; }
 
