@@ -17,7 +17,9 @@ import { describeAnimation } from '../../domain';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { describeError, logger } from '../../lib/logger';
 import { detectArCapability, type ArCapability } from '../../services/arCapability';
+import { detectRenderProfile } from '../../services/renderTier';
 import { resolveAsset, type AssetDescriptor } from './assetAdapter';
+import { Lighting } from './Lighting';
 import { NagimalModel } from './models/NagimalModel';
 import { startArSession, type XrSessionHandle } from './webxr';
 import { StageMeter } from '../common/StageMeter';
@@ -45,6 +47,9 @@ export function ArViewer({ snapshot }: ViewerProps) {
   const [sessionError, setSessionError] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  // How richly this device can draw. Fixed for the life of the page: the
+  // hardware is not going to change underneath us.
+  const profile = useMemo(() => detectRenderProfile(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,10 +99,10 @@ export function ArViewer({ snapshot }: ViewerProps) {
     <div className="stack">
       <div className="viewer">
         <Canvas
-          shadows
-          dpr={[1, 2]}
+          shadows={profile.shadows ? (profile.softShadows ? 'soft' : true) : false}
+          dpr={profile.dpr}
           camera={{ position: [0, 1.15, 3.3], fov: 42 }}
-          gl={{ antialias: true, alpha: capability.pathway === 'webxr' }}
+          gl={{ antialias: profile.antialias, alpha: capability.pathway === 'webxr' }}
           onCreated={({ gl }) => {
             gl.xr.enabled = true;
           }}
@@ -251,18 +256,10 @@ function RoomScene({ snapshot, assets, reducedMotion, accessoriesFor, orbit }: S
 
   return (
     <>
-      {/*
-        Lit with plain lights rather than drei's <Environment>, which downloads
-        an HDR from a CDN. Nagimals must render with no network at all, and a
-        failed fetch there took the whole scene down.
-      */}
       {/* A warm interior rather than an empty black void behind the household. */}
       <color attach="background" args={['#2a211a']} />
-      <fog attach="fog" args={['#2a211a', 4, 11]} />
-      <ambientLight intensity={0.5} />
-      <hemisphereLight args={['#ffe9c8', '#4a3b2c', 0.7]} />
-      <directionalLight position={[3, 5, 2]} intensity={1.4} castShadow />
-      <directionalLight position={[-2, 2, -1]} intensity={0.35} />
+      <fog attach="fog" args={['#2a211a', 4.5, 12]} />
+      <Lighting />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
         <planeGeometry args={[14, 14]} />
@@ -365,8 +362,7 @@ function ArScene({
 
   return (
     <>
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[1, 4, 2]} intensity={1.2} />
+      <Lighting inSession />
 
       <mesh ref={reticle} visible={false}>
         <ringGeometry args={[0.09, 0.11, 24]} />

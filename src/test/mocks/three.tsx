@@ -27,6 +27,7 @@ vi.mock('@react-three/drei', () => ({
   OrbitControls: () => null,
   PresentationControls: ({ children }: { children?: ReactNode }) => <>{children}</>,
   ContactShadows: () => null,
+  RoundedBox: ({ children }: { children?: ReactNode }) => <>{children}</>,
   Environment: () => null,
   useGLTF: () => ({ scene: {}, animations: [] }),
   useAnimations: () => ({ actions: {}, mixer: { stopAllAction: vi.fn() } }),

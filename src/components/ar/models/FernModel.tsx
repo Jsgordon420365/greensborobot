@@ -11,6 +11,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { SoftBox } from './SoftBox';
 import type { Group } from 'three';
 import type { ModelProps } from './DogModel';
 
@@ -118,10 +119,9 @@ export function FernModel({ stage, reducedMotion = false, accessories = [] }: Mo
                 return (
                   <group key={j} position={[x, -curl * 0.18, 0]} rotation={[0, 0, -curl]}>
                     {([-1, 1] as const).map((side) => (
-                      <mesh key={side} position={[0, 0, side * 0.045]} rotation={[0, 0, 0]}>
-                        <boxGeometry args={[size * 1.6, 0.012, size]} />
+                      <SoftBox args={[size * 1.6, 0.012, size]} key={side} position={[0, 0, side * 0.045]} rotation={[0, 0, 0]}>
                         <meshStandardMaterial color={leafColor} roughness={0.88} />
-                      </mesh>
+          </SoftBox>
                     ))}
                   </group>
                 );
@@ -135,14 +135,12 @@ export function FernModel({ stage, reducedMotion = false, accessories = [] }: Mo
           Array.from({ length: stage === 4 ? 6 : 3 }, (_, i) => {
             const angle = (i / 6) * Math.PI * 2;
             return (
-              <mesh
+              <SoftBox args={[0.07, 0.008, 0.035]} 
                 key={i}
                 position={[Math.cos(angle) * 0.13, -0.005, Math.sin(angle) * 0.13]}
-                rotation={[Math.PI / 2, 0, angle]}
-              >
-                <boxGeometry args={[0.07, 0.008, 0.035]} />
+                rotation={[Math.PI / 2, 0, angle]}>
                 <meshStandardMaterial color={SEVERE} roughness={0.95} />
-              </mesh>
+          </SoftBox>
             );
           })}
       </group>

@@ -1,5 +1,7 @@
 import { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { Lighting } from '../ar/Lighting';
+import { detectRenderProfile } from '../../services/renderTier';
 import { ContactShadows, PresentationControls } from '@react-three/drei';
 import { DOG_CANDIDATES, type CommunicationStyle } from '../../domain';
 import { useAppStore } from '../../app/store';
@@ -24,6 +26,7 @@ export function Shelter({ onAdopted }: { onAdopted: () => void }) {
   const adopt = useAppStore((s) => s.adopt);
   const busy = useAppStore((s) => s.busy);
   const reducedMotion = useReducedMotion();
+  const profile = detectRenderProfile();
 
   const [selected, setSelected] = useState(DOG_CANDIDATES[0].variant);
   const [name, setName] = useState(DOG_CANDIDATES[0].defaultName);
@@ -74,21 +77,34 @@ export function Shelter({ onAdopted }: { onAdopted: () => void }) {
 
               <div className="viewer" style={{ aspectRatio: '1 / 1', minHeight: 180 }}>
                 <Canvas
-                  dpr={[1, 2]}
-                  camera={{ position: [1.15, 0.75, 2.1], fov: 34 }}
-                  shadows
+                  dpr={profile.dpr}
+                  /*
+                    Framed on the head rather than the middle of the animal.
+                    Looking at the origin put the face above the top of a
+                    square preview, so you met every candidate side-on.
+                  */
+                  camera={{ position: [1.15, 0.5, 2.4], fov: 30 }}
+                  shadows={profile.shadows ? (profile.softShadows ? 'soft' : true) : false}
+                  gl={{ antialias: profile.antialias }}
                 >
                   <Suspense fallback={null}>
-                    <ambientLight intensity={0.7} />
-                    <directionalLight position={[2, 4, 2]} intensity={1.4} castShadow />
+                    <Lighting />
                     <PresentationControls
                       global
-                      snap
-                      rotation={[0, -0.4, 0]}
-                      polar={[-0.1, 0.4]}
-                      azimuth={[-0.7, 0.7]}
+                      /*
+                        No `snap`: it springs the animal back to its rest pose
+                        the instant you let go, which reads as the creature
+                        refusing to be looked at rather than as a control.
+                        Turning all the way round is the whole point of a
+                        shelter visit, so the azimuth is unclamped.
+                      */
+                      rotation={[0, 0.34, 0]}
+                      polar={[-0.25, 0.45]}
+                      azimuth={[-Math.PI, Math.PI]}
+                      damping={0.22}
+                      speed={1.3}
                     >
-                      <group position={[0, -0.3, 0]}>
+                      <group position={[0, -0.34, -0.16]}>
                         {/* Stage 1 gives every candidate a friendly idle. */}
                         <DogModel
                           variant={c.variant}

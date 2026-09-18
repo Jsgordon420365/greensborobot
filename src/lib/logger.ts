@@ -20,6 +20,7 @@ export type Operation =
   | 'household.seed'
   | 'rules.evaluate'
   | 'ar.capability'
+  | 'render.tier'
   | 'ar.session.start'
   | 'ar.session.end'
   | 'ar.placement'

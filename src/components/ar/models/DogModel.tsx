@@ -9,6 +9,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { SoftBox } from './SoftBox';
 import type { Group, Mesh } from 'three';
 import { findDogCandidate } from '../../../domain';
 import type { MovementBehavior } from '../../../domain';
@@ -122,10 +123,9 @@ export function DogModel({
   return (
     <group ref={root} scale={scale} name="dog">
       <group ref={body}>
-        <mesh position={[0, 0.34, 0]} castShadow receiveShadow>
-          <boxGeometry args={[0.42, 0.34, 0.72]} />
+        <SoftBox args={[0.42, 0.34, 0.72]} position={[0, 0.34, 0]} castShadow receiveShadow>
           <meshStandardMaterial color={coat} roughness={0.85} />
-        </mesh>
+          </SoftBox>
 
         {markings.map((m, i) => (
           <mesh key={i} position={m.position}>
@@ -142,10 +142,9 @@ export function DogModel({
             [0.14, 0.11, -0.24],
           ] as [number, number, number][]
         ).map((p, i) => (
-          <mesh key={i} position={p} castShadow>
-            <boxGeometry args={[0.11, 0.24, 0.12]} />
+          <SoftBox args={[0.11, 0.24, 0.12]} key={i} position={p} castShadow>
             <meshStandardMaterial color={accent} roughness={0.9} />
-          </mesh>
+          </SoftBox>
         ))}
 
         <group ref={tail} position={[0, 0.44, -0.36]}>
@@ -156,18 +155,15 @@ export function DogModel({
         </group>
 
         <group ref={head} position={[0, 0.52, 0.38]}>
-          <mesh castShadow>
-            <boxGeometry args={[0.3, 0.28, 0.3]} />
+          <SoftBox args={[0.3, 0.28, 0.3]} castShadow>
             <meshStandardMaterial color={coat} roughness={0.85} />
-          </mesh>
-          <mesh position={[0, -0.02, 0.2]} castShadow>
-            <boxGeometry args={[0.16, 0.13, 0.16]} />
+          </SoftBox>
+          <SoftBox args={[0.16, 0.13, 0.16]} position={[0, -0.02, 0.2]} castShadow>
             <meshStandardMaterial color={accent} roughness={0.9} />
-          </mesh>
-          <mesh ref={jaw} position={[0, -0.06, 0.2]}>
-            <boxGeometry args={[0.15, 0.05, 0.15]} />
+          </SoftBox>
+          <SoftBox args={[0.15, 0.05, 0.15]} ref={jaw} position={[0, -0.06, 0.2]}>
             <meshStandardMaterial color="#5b3730" roughness={0.95} />
-          </mesh>
+          </SoftBox>
           <mesh position={[0, 0.02, 0.29]}>
             <sphereGeometry args={[0.035, 8, 6]} />
             <meshStandardMaterial color="#241a17" roughness={0.5} />
@@ -179,23 +175,20 @@ export function DogModel({
             </mesh>
           ))}
           {([-0.12, 0.12] as const).map((x) => (
-            <mesh
+            <SoftBox args={[0.08, 0.14, 0.04]} 
               key={x}
               position={[x, 0.16, -0.02]}
               rotation={[stage === 0 ? 0.9 : 0.15, 0, x < 0 ? -0.2 : 0.2]}
-              castShadow
-            >
-              <boxGeometry args={[0.08, 0.14, 0.04]} />
+              castShadow>
               <meshStandardMaterial color={accent} roughness={0.9} />
-            </mesh>
+          </SoftBox>
           ))}
         </group>
 
         {candidate.accessory === 'bandana' && (
-          <mesh position={[0, 0.44, 0.26]} rotation={[0.2, 0, 0]}>
-            <boxGeometry args={[0.32, 0.12, 0.04]} />
+          <SoftBox args={[0.32, 0.12, 0.04]} position={[0, 0.44, 0.26]} rotation={[0.2, 0, 0]}>
             <meshStandardMaterial color="#c0453c" roughness={0.8} />
-          </mesh>
+          </SoftBox>
         )}
         {candidate.accessory === 'collar_tag' && (
           <>
@@ -218,10 +211,9 @@ export function DogModel({
           </mesh>
         )}
         {accessories.includes('blue_bandana') && (
-          <mesh position={[0, 0.42, 0.24]} rotation={[0.2, 0, 0]}>
-            <boxGeometry args={[0.34, 0.13, 0.04]} />
+          <SoftBox args={[0.34, 0.13, 0.04]} position={[0, 0.42, 0.24]} rotation={[0.2, 0, 0]}>
             <meshStandardMaterial color="#3f6fae" roughness={0.8} />
-          </mesh>
+          </SoftBox>
         )}
         {accessories.includes('brass_collar_charm') && (
           <mesh position={[0, 0.33, 0.31]}>
