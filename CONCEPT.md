@@ -46,6 +46,41 @@ Effort here is well spent on anything that makes a visitor *feel* what having
 one would be like — how the creatures look and move, how they are framed, AR,
 palette, the writing. Effort is poorly spent on making this authoritative.
 
+## Fidelity scales with the environment
+
+A Nagimal renders as richly as the device allows, and degrades without
+ceremony.
+
+At the top: a slick, Pixar-ish read — soft shadows, rounded forms, a rim light
+that puts the creature *in* a space rather than *on* a background. Where that
+cannot be afforded, the same creature is drawn more simply, the way a video
+call throttles a person down to an avatar. Same spirit. Still them.
+
+This is the channel principle again, applied to pixels. We would rather hold
+the people we love; we settle for a phone call; a text beats nothing at all. A
+thinner channel is not a failure state and must never be presented as one —
+no apology, no warning, no degraded-mode banner. The creature simply arrives
+in whatever fidelity the room can carry.
+
+Four rungs, in `src/services/renderTier.ts`:
+
+| tier | when | what changes |
+|---|---|---|
+| `full` | a capable GPU | soft shadows, rounded forms, rim light, full pixel ratio |
+| `standard` | WebGL 1, or modest cores or memory | shadows without softening, rounded forms kept |
+| `reduced` | software rasteriser, little memory, or data saving on | flat forms, no shadows, low pixel ratio |
+| `avatar` | no WebGL at all | a still portrait — the creature at its narrowest |
+
+Detection is deliberately conservative, so `?render=full` (or
+`localStorage.nagimals.renderTier`) pins a tier for checking how the other
+rungs read.
+
+**Keep this separate from AR capability.** They answer different questions.
+Capability decides *where* you meet a creature — immersive AR, an orbit viewer,
+a still card. Tier decides *how richly* it is drawn once we are drawing at all.
+A phone can be fully capable of AR and still be a `reduced` device, or a
+`full`-tier desktop with no AR whatsoever.
+
 ## What Nagimals is
 
 Nagimals is an intention ecology.

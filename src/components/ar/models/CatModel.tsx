@@ -9,6 +9,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { SoftBox } from './SoftBox';
 import type { Group, Mesh } from 'three';
 import type { ModelProps } from './DogModel';
 
@@ -176,10 +177,9 @@ export function CatModel({
         {/* eyelids, used for the slow blink */}
         <group ref={eyelids} position={[0, 0.03, 0.15]} scale={[1, 0, 1]}>
           {([-0.06, 0.06] as const).map((x) => (
-            <mesh key={x} position={[x, 0, 0]}>
-              <boxGeometry args={[0.07, 0.07, 0.02]} />
+            <SoftBox args={[0.07, 0.07, 0.02]} key={x} position={[x, 0, 0]}>
               <meshStandardMaterial color={CALICO_WHITE} roughness={0.9} />
-            </mesh>
+          </SoftBox>
           ))}
         </group>
 
