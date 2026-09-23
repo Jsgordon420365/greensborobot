@@ -39,6 +39,15 @@ Web push is implemented from the specifications (RFC 8291 encryption, RFC 8292
 VAPID) using only WebCrypto, so the same code runs unchanged in the browser,
 in Deno, and under Node in tests.
 
+## Site layout
+
+| Path | What |
+|---|---|
+| `/` | The greensborobot opening: a three.js cinematic ([`opening/`](./opening/README.md)). Its "enter" button leads to Nagimals. |
+| `/app/` | Nagimals (this app). `vite build` writes it to `dist/app/`; `vite preview` and the e2e tests serve it at `/` as before. |
+
+`npm run build` builds both. `npm run dev:opening` runs the opening alone.
+
 ## Deployment
 
 Netlify builds `main` on every push. `netlify.toml` holds the build command,

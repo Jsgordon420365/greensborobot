@@ -7,7 +7,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "npm run sync:edge && tsc -b && vite build",
+    "build": "npm run sync:edge && tsc -b && vite build && npm run build:opening",
+    "build:opening": "vite build --config opening/vite.config.js",
+    "dev:opening": "vite --config opening/vite.config.js",
     "preview": "vite preview",
     "start": "vite preview --host 0.0.0.0 --port 4173",
     "lint": "eslint . --max-warnings 0",

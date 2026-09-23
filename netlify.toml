@@ -5,27 +5,39 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Single-page application: every unmatched path renders the app shell so a
-# deep link or a refresh lands on the household rather than a 404.
+# Layout:  /        the greensborobot opening (opening/, a plain three.js page)
+#          /app/    Nagimals (the React SPA; hash-routed)
+# Nagimals is hash-routed, so its fallback is only a safety net for refreshes.
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/app/*"
+  to = "/app/index.html"
   status = 200
 
-# The service worker must never be served stale, otherwise a deploy cannot
-# replace the cached shell and returning visitors stay on the old build.
+# Service workers and manifests must never be served stale, otherwise a deploy
+# cannot replace the cached shell. /sw.js is now the retirement worker for the
+# old root-scoped Nagimals registration.
 [[headers]]
   for = "/sw.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
-  for = "/manifest.webmanifest"
+  for = "/app/sw.js"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Vite emits content-hashed asset filenames, so they are safe to cache hard.
 [[headers]]
-  for = "/assets/*"
+  for = "/app/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Vite emits content-hashed filenames in both builds, so they cache hard.
+[[headers]]
+  for = "/app/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/o/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
