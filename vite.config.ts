@@ -7,7 +7,8 @@ export default defineConfig({
   plugins: [react()],
   base: './',
   build: {
-    outDir: 'dist',
+    // The site root belongs to the greensborobot opening (opening/); Nagimals lives in /app/.
+    outDir: 'dist/app',
     sourcemap: true,
     // The only chunk over the default limit is the Three.js vendor bundle,
     // which is lazily loaded by the shelter and the viewer and never enters

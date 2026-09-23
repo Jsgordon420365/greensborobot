@@ -51,6 +51,15 @@ export default tseslint.config(
     rules: { 'no-console': 'off' },
   },
   {
+    // The greensborobot opening: plain browser modules (three.js), no TypeScript.
+    files: ['opening/src/**/*.js', 'opening/vite.config.js'],
+    languageOptions: { ecmaVersion: 2022, sourceType: 'module', globals: { ...globals.browser, ...globals.node } },
+  },
+  {
+    files: ['opening/public/sw.js'],
+    languageOptions: { globals: { ...globals.serviceworker }, sourceType: 'script' },
+  },
+  {
     files: ['scripts/**/*.mjs', 'supabase/functions/**/*.ts'],
     languageOptions: { globals: { ...globals.node } },
     rules: { 'no-console': 'off', '@typescript-eslint/no-explicit-any': 'off' },

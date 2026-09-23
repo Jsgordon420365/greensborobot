@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>greensborobot</title>
+<meta name="description" content="greensborobot — a handmade Greensboro, built on a stage.">
+<script>
+  // Old Nagimals links and installed home-screen apps point at /index.html#/…; they belong in /app/ now.
+  if (/^#\//.test(location.hash)) location.replace('app/' + location.hash);
+</script>
+<link rel="icon" type="image/png" href="app/icons/icon-192.png">
+<link rel="preload" href="media/fonts/fredoka-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500 600; font-display: swap; src: url(media/fonts/fredoka-latin.woff2) format('woff2'); }
+  :root { --ink: #6d675e; --paper: #f6f5f1; }
+  html, body { margin: 0; height: 100%; background: var(--paper); overflow: hidden; }
+  body.dark { background: #000; }
+  #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: pointer; touch-action: manipulation; }
+  #veil { position: fixed; inset: 0; background: var(--paper); pointer-events: none; }
+  .ctl { position: fixed; bottom: max(14px, env(safe-area-inset-bottom)); font: 500 13px/1 "Fredoka", system-ui, sans-serif; letter-spacing: .04em;
+         background: none; border: 0; color: var(--ink); opacity: .55; cursor: pointer; padding: 8px 10px; transition: opacity .3s, color .6s; }
+  .ctl:hover, .ctl:focus-visible { opacity: 1; }
+  body.dark .ctl { color: #cfc6b4; }
+  #sound { left: 12px; } #skip { right: 12px; }
+  #hint { position: fixed; left: 50%; bottom: 13%; transform: translate(-50%, 8px) rotate(-2deg); font: 600 17px "Fredoka", system-ui, sans-serif; color: #3f5b2a;
+          background: #e9dcc0; padding: 9px 16px 10px; border-radius: 3px; box-shadow: 0 2px 0 #b9a47c, 0 8px 18px rgba(0,0,0,.12); opacity: 0; transition: opacity .8s, transform .8s; pointer-events: none; }
+  #hint::before { content: ""; position: absolute; left: 50%; top: -14px; width: 1px; height: 14px; background: #b9a47c; }
+  #hint.show { opacity: .95; transform: translate(-50%, 0) rotate(-2deg); animation: bob 2.4s ease-in-out infinite 1s; }
+  @keyframes bob { 50% { transform: translate(-50%, -3px) rotate(-1deg); } }
+  #end { position: fixed; left: 50%; bottom: max(7%, 48px); transform: translateX(-50%); display: flex; gap: 14px; align-items: center; opacity: 0; transition: opacity 1.4s; pointer-events: none; }
+  #end.show { opacity: 1; pointer-events: auto; }
+  #end a, #end button { font: 600 16px "Fredoka", system-ui, sans-serif; color: #2e2618; background: #d9c49a; border: 0; border-radius: 3px; padding: 10px 18px 11px; text-decoration: none;
+          box-shadow: 0 2px 0 #9c8458, 0 10px 24px rgba(0,0,0,.35); cursor: pointer; transform: rotate(-1.5deg); }
+  #end button { background: transparent; color: #cfc6b4; box-shadow: none; font-weight: 500; transform: none; }
+  #dbg { position: fixed; top: 8px; left: 8px; font: 12px monospace; color: #c00; display: none; background: rgba(255,255,255,.7); padding: 2px 6px; }
+  @media (prefers-reduced-motion: reduce) { #hint.show { animation: none; } }
+</style>
+</head>
+<body>
+  <canvas id="stage" aria-label="greensborobot opening animation. Click or press Enter to follow him."></canvas>
+  <div id="veil"></div>
+  <div id="hint">follow him</div>
+  <button id="sound" class="ctl" aria-pressed="false">Turn sound on</button>
+  <button id="skip" class="ctl">skip intro</button>
+  <div id="end"><a id="enter" href="app/">enter greensborobot</a><button id="replay">replay</button></div>
+  <div id="dbg"></div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
