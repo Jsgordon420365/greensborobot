@@ -17,9 +17,10 @@ The job here is to make a visitor want one, so how the creatures look and move
 matters more than whether this is a faithful system of record. It is not one,
 and it is not becoming one.
 
-`IDEAS.md` is the opposite of canon: concepts still in motion, dated and
-attributed. Read it for where the thinking is going. Do not build from it —
-an idea appearing there has not been decided.
+`IDEAS.md` is the opposite of canon: concepts still in motion, dated,
+attributed, and weighted `live` or `what if`. Read it for where the thinking is
+going. Do not build from it — an idea appearing there has not been decided, and
+a `what if` was said in passing rather than advocated.
 
 ## Treat remembered context as potentially stale
 
