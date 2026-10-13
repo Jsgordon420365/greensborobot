@@ -17,6 +17,10 @@ The job here is to make a visitor want one, so how the creatures look and move
 matters more than whether this is a faithful system of record. It is not one,
 and it is not becoming one.
 
+`IDEAS.md` is the opposite of canon: concepts still in motion, dated and
+attributed. Read it for where the thinking is going. Do not build from it —
+an idea appearing there has not been decided.
+
 ## Treat remembered context as potentially stale
 
 This applies to more than this repository. Infrastructure, tool availability,
