@@ -8,6 +8,9 @@ build is faithful to a 2025-era conception and describes itself accurately in
 its own comments, which makes it a closed loop. Read this before inferring the
 design from `src/domain`.
 
+This file is what has settled. Thinking still in motion lives in `IDEAS.md`,
+which is explicitly not canon.
+
 ---
 
 ## What this repository is — read this first
