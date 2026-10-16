@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<!-- ver 20261016000000.0 -->
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Planetary Harmonics — Geometric Orbit Trails</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Cormorant Garamond for an elevated astronomical aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-void: #03050a;
+      --panel-bg: rgba(10, 14, 24, 0.72);
+      --panel-border: rgba(148, 163, 184, 0.14);
+      --accent-glow: rgba(125, 211, 252, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-void);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #e2e8f0;
+    }
+
+    .font-serif-display {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Stacked full-viewport canvases */
+    .canvas-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+    }
+
+    #interactionCanvas {
+      pointer-events: auto;
+      cursor: grab;
+    }
+
+    #interactionCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* Glassmorphic floating panel */
+    .glass-panel {
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 1px 1px rgba(255, 255, 255, 0.04) inset;
+    }
+
+    /* Custom subtle scrollbar for control drawer */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.45);
+    }
+
+    /* Custom range sliders */
+    input[type="range"].cosmic-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      outline: none;
+      transition: background 0.2s ease;
+    }
+
+    input[type="range"].cosmic-slider:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    input[type="range"].cosmic-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #f8fafc;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"].cosmic-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.95);
+    }
+
+    input[type="range"].cosmic-slider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #f8fafc;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* Compact planet brightness slider */
+    input[type="range"].mini-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      outline: none;
+    }
+
+    input[type="range"].mini-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Button active & glow states */
+    .icon-toggle {
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .icon-toggle.active {
+      background: rgba(56, 189, 248, 0.18);
+      color: #7dd3fc;
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.18);
+    }
+    .icon-toggle.inactive {
+      background: rgba(255, 255, 255, 0.03);
+      color: rgba(148, 163, 184, 0.45);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+
+<body class="relative w-screen h-screen overflow-hidden select-none">
+
+  <!-- 1. BACKGROUND STARFIELD & NEBULA LAYER -->
+  <canvas id="bgCanvas" class="canvas-layer"></canvas>
+
+  <!-- 2. PERSISTENT / INFINITY TRAIL LAYER -->
+  <canvas id="persistCanvas" class="canvas-layer"></canvas>
+
+  <!-- 3. DYNAMIC DECAYING TRAILS & ACTIVE ORBITS/PLANETS LAYER -->
+  <canvas id="interactionCanvas" class="canvas-layer"></canvas>
+
+  <!-- TOP-LEFT HEADER & LIVE TELEMETRY -->
+  <header class="fixed top-4 left-4 sm:top-6 sm:left-7 z-20 pointer-events-none flex flex-col gap-1 max-w-md">
+    <div class="flex items-center gap-3">
+      <div class="w-2.5 h-2.5 rounded-full bg-amber-300 shadow-[0_0_12px_#fcd34d] animate-pulse"></div>
+      <h1 class="font-serif-display text-2xl sm:text-4xl font-medium tracking-wide text-slate-100 drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]">
+        Planetary Harmonics
+      </h1>
+    </div>
+    <p class="text-xs sm:text-sm text-slate-400 font-light tracking-wider pl-5">
+      Geometric orbit trails from Mercury to Jupiter
+    </p>
+
+    <!-- Live Orbital Telemetry Pill -->
+    <div class="mt-2 pl-5 flex flex-wrap items-center gap-2 pointer-events-auto">
+      <div class="glass-panel px-3 py-1 rounded-full flex items-center gap-3 text-[11px] text-slate-300 font-mono-code">
+        <span>ORBITS: <strong id="statYears" class="text-sky-300 font-normal">0.0</strong> yr</span>
+        <span class="text-slate-600">•</span>
+        <span>CHORDS: <strong id="statChords" class="text-amber-200 font-normal">0</strong></span>
+      </div>
+      <button id="recenterBtn" title="Reset Camera Zoom & Pan" class="hidden glass-panel px-2.5 py-1 rounded-full text-[11px] text-sky-300 hover:bg-sky-500/20 transition flex items-center gap-1">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+        Re-center
+      </button>
+    </div>
+  </header>
+
+  <!-- BOTTOM-LEFT UNOBTRUSIVE LEGEND / TOOLTIP -->
+  <div class="fixed bottom-4 left-4 sm:bottom-6 sm:left-7 z-20 pointer-events-none max-w-xs sm:max-w-md">
+    <div class="glass-panel px-3.5 py-2 rounded-xl flex items-center gap-2.5 text-xs text-slate-300/90 border border-slate-700/40">
+      <svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span class="leading-relaxed">
+        Lines are drawn between the currently enabled planets at each sample step.
+        <span class="hidden sm:inline text-slate-400">Scroll to zoom, drag to pan.</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- FLOATING CONTROL PANEL (TOP-RIGHT / COLLAPSIBLE) -->
+  <aside id="controlPanelWrapper" class="fixed top-4 right-4 sm:top-6 sm:right-6 z-30 w-[calc(100vw-2rem)] sm:w-[350px] max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] flex flex-col glass-panel rounded-2xl transition-all duration-300 overflow-hidden">
+
+    <!-- Panel Top Bar (Always Visible) -->
+    <div class="px-4 py-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/40 shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold uppercase tracking-widest text-slate-300">Harmonic Studio</span>
+        <span id="activePresetBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/20 font-medium">
+          Cosmos Quartet
+        </span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <!-- Snapshot Download Button -->
+        <button id="snapshotBtn" title="Save High-Res Artwork (PNG)" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+            <circle cx="12" cy="13" r="3"/>
+          </svg>
+        </button>
+        <!-- Collapse / Expand Panel Button -->
+        <button id="collapsePanelBtn" title="Minimize / Expand Controls" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition">
+          <svg id="collapseIcon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Controls Body -->
+    <div id="controlPanelBody" class="p-4 overflow-y-auto custom-scroll space-y-5 text-xs">
+
+      <!-- 1. PLAY / PAUSE & RESET TRANSPORT -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <button id="playPauseBtn" class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-xs bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 border border-sky-400/30 shadow-[0_0_20px_rgba(56,189,248,0.15)] transition active:scale-[0.98]">
+          <svg id="playIcon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          <span id="playPauseText">Pause</span>
+        </button>
+
+        <button id="resetBtn" class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-medium text-xs bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 transition active:scale-[0.98]">
+          <svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Reset Trails</span>
+        </button>
+      </div>
+
+      <!-- 2. PRESETS MENU -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Curated Presets</label>
+          <span class="text-[10px] text-slate-500">Instant Configurations</span>
+        </div>
+        <div class="grid grid-cols-2 gap-1.5" id="presetButtonsContainer">
+          <button data-preset="earthVenus" class="preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-slate-200 text-xs">Earth & Venus</span>
+            <span class="text-[10px] text-slate-400">Classic 5-petal rose</span>
+          </button>
+          <button data-preset="innerPlanets" class="preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-slate-200 text-xs">Inner Planets</span>
+            <span class="text-[10px] text-slate-400">Mercury through Mars</span>
+          </button>
+          <button data-preset="allJupiter" class="preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-slate-200 text-xs">All through Jupiter</span>
+            <span class="text-[10px] text-slate-400">Full 5-planet symphony</span>
+          </button>
+          <button data-preset="denseMandala" class="preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-slate-200 text-xs">Dense Mandala</span>
+            <span class="text-[10px] text-slate-400">Infinite silk lacework</span>
+          </button>
+          <button data-preset="minimal" class="preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-slate-200 text-xs">Minimal</span>
+            <span class="text-[10px] text-slate-400">Crystalline sparse chords</span>
+          </button>
+          <button data-preset="cosmosQuartet" class="preset-btn text-left px-3 py-2 rounded-xl border border-sky-400/40 bg-sky-500/15 hover:bg-white/[0.08] transition flex flex-col">
+            <span class="font-medium text-sky-200 text-xs">Cosmos Quartet</span>
+            <span class="text-[10px] text-sky-300/80">Venus to Jupiter web</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. SPEED, PERSISTENCE & DENSITY SLIDERS -->
+      <div class="space-y-4 p-3.5 rounded-xl bg-slate-950/45 border border-white/[0.06]">
+
+        <!-- Speed Control -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label for="speedSlider" class="text-slate-300 font-medium">Orbital Tempo</label>
+            <span id="speedLabel" class="text-sky-300 font-mono-code text-[11px] px-2 py-0.5 rounded bg-sky-500/10 border border-sky-400/20">Hypnotic</span>
+          </div>
+          <input id="speedSlider" type="range" min="0" max="5" step="1" value="3" class="cosmic-slider" />
+          <div class="flex justify-between text-[9px] text-slate-500 uppercase tracking-tighter pt-0.5">
+            <span>Meditative</span>
+            <span>Slow</span>
+            <span>Balanced</span>
+            <span>Hypnotic</span>
+            <span>Fast</span>
+            <span>Wild</span>
+          </div>
+        </div>
+
+        <!-- Trail Decay / Persistence Control -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label for="decaySlider" class="text-slate-300 font-medium">Trail Persistence</label>
+            <span id="decayLabel" class="text-amber-300 font-mono-code text-[11px] px-2 py-0.5 rounded bg-amber-500/10 border border-amber-400/20">Very Long</span>
+          </div>
+          <input id="decaySlider" type="range" min="0" max="5" step="1" value="4" class="cosmic-slider" />
+          <div class="flex justify-between text-[9px] text-slate-500 uppercase tracking-tighter pt-0.5">
+            <span>Ephemeral</span>
+            <span>Short</span>
+            <span>Medium</span>
+            <span>Long</span>
+            <span>Very Long</span>
+            <span class="text-amber-300 font-semibold">Infinity ∞</span>
+          </div>
+        </div>
+
+        <!-- Sampling Density / Line Frequency Control -->
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label for="densitySlider" class="text-slate-300 font-medium">Sampling Density</label>
+            <span id="densityLabel" class="text-emerald-300 font-mono-code text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-400/20">Fine Lace</span>
+          </div>
+          <input id="densitySlider" type="range" min="0" max="4" step="1" value="3" class="cosmic-slider" />
+          <div class="flex justify-between text-[9px] text-slate-500 uppercase tracking-tighter pt-0.5">
+            <span>Sparse</span>
+            <span>Delicate</span>
+            <span>Balanced</span>
+            <span>Fine Lace</span>
+            <span>Dense Silk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. CONNECTION TOPOLOGY & COLOR PALETTE -->
+      <div class="space-y-3">
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Connection Mode</label>
+          <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-950/60 border border-white/[0.06]">
+            <button data-conn="all" class="conn-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition bg-sky-500/20 text-sky-200 border border-sky-400/30">
+              All Enabled
+            </button>
+            <button data-conn="pairs" class="conn-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent">
+              Focus Pairs
+            </button>
+            <button data-conn="earthVenus" class="conn-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent">
+              Earth–Venus
+            </button>
+          </div>
+        </div>
+
+        <!-- Optional Focus Pair Selector Matrix (Shown when "Focus Pairs" mode is active) -->
+        <div id="focusPairsDrawer" class="hidden p-3 rounded-xl bg-slate-950/60 border border-sky-500/25 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] uppercase tracking-wider text-sky-300 font-medium">Select Active Planet Pairs</span>
+            <button id="toggleAllPairsBtn" class="text-[10px] text-slate-400 hover:text-white underline">Invert</button>
+          </div>
+          <div id="pairChipsContainer" class="flex flex-wrap gap-1.5">
+            <!-- Dynamically populated pair chips -->
+          </div>
+        </div>
+
+        <!-- Color Mode Selector -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Luminous Palette</label>
+          <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-950/60 border border-white/[0.06]">
+            <button data-color="multicolor" class="color-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition bg-sky-500/20 text-sky-200 border border-sky-400/30">
+              Multicolor
+            </button>
+            <button data-color="pastel" class="color-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent">
+              Pastel Nebula
+            </button>
+            <button data-color="monochrome" class="color-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent">
+              Monochrome
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. PLANETARY MIXER (MERCURY TO JUPITER) -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-[11px] font-medium uppercase tracking-wider text-slate-400">Planetary Mixer</label>
+          <div class="flex items-center gap-2 text-[10px] text-slate-500">
+            <span title="Show/Hide Planet Dot">Dot</span>
+            <span>•</span>
+            <span title="Participates in Line Drawing">Lines</span>
+            <span>•</span>
+            <span title="Show/Hide Orbit Ring">Orbit</span>
+          </div>
+        </div>
+
+        <!-- Planet Rows Container -->
+        <div id="planetControlsContainer" class="space-y-2">
+          <!-- Populated dynamically via JS for clean state sync -->
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <script>
+    /**
+     * PLANETARY HARMONICS — INTERACTIVE ORBITAL GEOMETRY ENGINE
+     *
+     * Architectural Overview:
+     * 1. bgCanvas: Renders deep-space radial vignette, subtle cosmic nebula, and twinkling stars.
+     * 2. persistCanvas: Accumulates permanent geometric chords when Persistence is set to Infinity (O(1) cost per frame).
+     * 3. interactionCanvas: Renders decaying trail segments (bucketed by alpha bands for zero 8-bit ghosting),
+     *    subtle orbital rings, the glowing Sun, active chord flashes, and luminous planet bodies.
+     */
+
+    // --- SPEED, PERSISTENCE & DENSITY DEFINITIONS ---
+    const SPEED_TIERS = [
+      { label: 'Meditative', radPerSec: 0.32, maxStepRad: 0.012 },
+      { label: 'Slow',       radPerSec: 0.75, maxStepRad: 0.015 },
+      { label: 'Balanced',   radPerSec: 1.45, maxStepRad: 0.018 },
+      { label: 'Hypnotic',   radPerSec: 2.75, maxStepRad: 0.020 },
+      { label: 'Fast',       radPerSec: 5.40, maxStepRad: 0.022 },
+      { label: 'Wild',       radPerSec: 11.2, maxStepRad: 0.025 }
+    ];
+
+    // Trail decay measured in Earth-orbital-radians of age before fading to 0
+    const DECAY_TIERS = [
+      { label: 'Ephemeral', maxAgeRad: 8.5,   infinite: false },
+      { label: 'Short',     maxAgeRad: 22.0,  infinite: false },
+      { label: 'Medium',    maxAgeRad: 52.0,  infinite: false },
+      { label: 'Long',      maxAgeRad: 115.0, infinite: false },
+      { label: 'Very Long', maxAgeRad: 240.0, infinite: false },
+      { label: 'Infinity ∞', maxAgeRad: Infinity, infinite: true }
+    ];
+
+    // Sampling interval in Earth radians between chord snapshots
+    const DENSITY_TIERS = [
+      { label: 'Sparse',     sampleIntervalRad: 0.22,  baseAlpha: 0.34 },
+      { label: 'Delicate',   sampleIntervalRad: 0.13,  baseAlpha: 0.25 },
+      { label: 'Balanced',   sampleIntervalRad: 0.082, baseAlpha: 0.19 },
+      { label: 'Fine Lace',  sampleIntervalRad: 0.048, baseAlpha: 0.14 },
+      { label: 'Dense Silk', sampleIntervalRad: 0.026, baseAlpha: 0.10 }
+    ];
+
+    // --- PLANET DEFINITIONS ---
+    // Relative orbital frequencies tuned to astronomical resonances (e.g., Venus:Earth = 13:8 = 1.625)
+    // for crystalline geometric symmetry.
+    const PLANETS_CONFIG = [
+      {
+        id: 'mercury',
+        name: 'Mercury',
+        ratioText: '88d',
+        au: 0.387,
+        freq: 4.15209,        // ~1 / 0.2408467
+        eccentricity: 0.015,  // Subtle harmonic eccentricity
+        initialAngle: 0.0,
+        radiusPx: 3.4,
+        colors: {
+          multicolor: { r: 226, g: 232, b: 240 }, // Silver-Quicksilver
+          pastel:     { r: 216, g: 180, b: 254 }, // Soft Lilac
+          monochrome: { r: 226, g: 238, b: 255 }
+        },
+        visible: true,
+        participates: false,
+        showOrbit: true,
+        brightness: 0.85
+      },
+      {
+        id: 'venus',
+        name: 'Venus',
+        ratioText: '225d',
+        au: 0.7233,
+        freq: 1.625,          // Exact 13:8 resonance with Earth for the iconic 5-petal rose
+        eccentricity: 0.004,
+        initialAngle: Math.PI * 0.25,
+        radiusPx: 4.6,
+        colors: {
+          multicolor: { r: 251, g: 191, b: 36 },  // Warm Golden Amber
+          pastel:     { r: 253, g: 164, b: 175 }, // Rose Quartz
+          monochrome: { r: 226, g: 238, b: 255 }
+        },
+        visible: true,
+        participates: true,
+        showOrbit: true,
+        brightness: 1.0
+      },
+      {
+        id: 'earth',
+        name: 'Earth',
+        ratioText: '365d',
+        au: 1.000,
+        freq: 1.000,          // Reference 1.000 orbital angular frequency
+        eccentricity: 0.006,
+        initialAngle: 0.0,
+        radiusPx: 4.9,
+        colors: {
+          multicolor: { r: 56,  g: 189, b: 248 }, // Celestial Cyan-Blue
+          pastel:     { r: 125, g: 211, b: 252 }, // Sky Pastel
+          monochrome: { r: 226, g: 238, b: 255 }
+        },
+        visible: true,
+        participates: true,
+        showOrbit: true,
+        brightness: 1.05
+      },
+      {
+        id: 'mars',
+        name: 'Mars',
+        ratioText: '687d',
+        au: 1.524,
+        freq: 0.53168,        // ~8:15 harmonic resonance with Earth
+        eccentricity: 0.018,
+        initialAngle: Math.PI * 0.75,
+        radiusPx: 4.1,
+        colors: {
+          multicolor: { r: 251, g: 113, b: 133 }, // Luminous Coral-Red
+          pastel:     { r: 253, g: 186, b: 116 }, // Soft Peach-Coral
+          monochrome: { r: 226, g: 238, b: 255 }
+        },
+        visible: true,
+        participates: true,
+        showOrbit: true,
+        brightness: 0.95
+      },
+      {
+        id: 'jupiter',
+        name: 'Jupiter',
+        ratioText: '11.9y',
+        au: 2.38,             // Harmonically scaled from 5.2 AU so inner orbits remain generous
+        freq: 0.0843,         // ~1 / 11.8626 years
+        eccentricity: 0.012,
+        initialAngle: Math.PI * 1.35,
+        radiusPx: 6.6,
+        colors: {
+          multicolor: { r: 167, g: 139, b: 250 }, // Deep Astral Violet-Indigo
+          pastel:     { r: 167, g: 243, b: 208 }, // Ethereal Mint-Jovian
+          monochrome: { r: 226, g: 238, b: 255 }
+        },
+        visible: true,
+        participates: true,
+        showOrbit: true,
+        brightness: 0.90
+      }
+    ];
+
+    // --- APPLICATION STATE ---
+    const state = {
+      isPlaying: true,
+      simRad: 0,                  // Total elapsed Earth radians
+      lastSampleRad: 0,           // Earth radian timestamp of last chord sample
+      totalChordsDrawn: 0,
+      speedIndex: 3,              // Default: Hypnotic
+      decayIndex: 4,              // Default: Very Long
+      densityIndex: 3,            // Default: Fine Lace
+      connectionMode: 'all',      // 'all' | 'pairs' | 'earthVenus'
+      colorMode: 'multicolor',    // 'multicolor' | 'pastel' | 'monochrome'
+      activePreset: 'cosmosQuartet',
+      planets: JSON.parse(JSON.stringify(PLANETS_CONFIG)),
+      selectedPairs: new Set(['venus-earth', 'earth-mars', 'mars-jupiter']),
+
+      // Viewport & Camera transform
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      autoScaleAu: 2.38,          // Smoothly interpolates toward outermost active AU
+      targetScaleAu: 2.38,
+      userZoom: 1.0,
+      panX: 0,
+      panY: 0,
+      isDragging: false,
+      dragStartX: 0,
+      dragStartY: 0
+    };
+
+    // Active trail segments for decay mode: stored in a clean array
+    // Each segment: { p1Idx, p2Idx, x1Au, y1Au, x2Au, y2Au, bornRad }
+    // Storing coordinates in AU allows seamless zooming/resizing without distorting trails!
+    let activeSegments = [];
+    const MAX_LIVE_SEGMENTS = 9500;
+
+    // Starfield array
+    let stars = [];
+
+    // --- DOM REFERENCES ---
+    const bgCanvas = document.getElementById('bgCanvas');
+    const persistCanvas = document.getElementById('persistCanvas');
+    const interactionCanvas = document.getElementById('interactionCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const persistCtx = persistCanvas.getContext('2d');
+    const ctx = interactionCanvas.getContext('2d');
+
+    // --- PRESETS CATALOG ---
+    const PRESETS = {
+      earthVenus: {
+        name: 'Earth & Venus',
+        speedIndex: 3,
+        decayIndex: 5, // Infinity
+        densityIndex: 3,
+        connectionMode: 'earthVenus',
+        colorMode: 'multicolor',
+        planets: {
+          mercury: { visible: true,  participates: false, showOrbit: true,  brightness: 0.5 },
+          venus:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.15 },
+          earth:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.15 },
+          mars:    { visible: false, participates: false, showOrbit: false, brightness: 0.8 },
+          jupiter: { visible: false, participates: false, showOrbit: false, brightness: 0.8 }
+        }
+      },
+      innerPlanets: {
+        name: 'Inner Planets',
+        speedIndex: 2,
+        decayIndex: 4,
+        densityIndex: 2,
+        connectionMode: 'all',
+        colorMode: 'multicolor',
+        planets: {
+          mercury: { visible: true,  participates: true,  showOrbit: true,  brightness: 0.85 },
+          venus:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.0 },
+          earth:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.05 },
+          mars:    { visible: true,  participates: true,  showOrbit: true,  brightness: 0.95 },
+          jupiter: { visible: false, participates: false, showOrbit: false, brightness: 0.8 }
+        }
+      },
+      allJupiter: {
+        name: 'All through Jupiter',
+        speedIndex: 3,
+        decayIndex: 4,
+        densityIndex: 2,
+        connectionMode: 'all',
+        colorMode: 'multicolor',
+        planets: {
+          mercury: { visible: true, participates: true, showOrbit: true, brightness: 0.75 },
+          venus:   { visible: true, participates: true, showOrbit: true, brightness: 0.95 },
+          earth:   { visible: true, participates: true, showOrbit: true, brightness: 1.05 },
+          mars:    { visible: true, participates: true, showOrbit: true, brightness: 0.95 },
+          jupiter: { visible: true, participates: true, showOrbit: true, brightness: 1.05 }
+        }
+      },
+      denseMandala: {
+        name: 'Dense Mandala',
+        speedIndex: 4,
+        decayIndex: 5, // Infinity
+        densityIndex: 4,
+        connectionMode: 'all',
+        colorMode: 'pastel',
+        planets: {
+          mercury: { visible: false, participates: false, showOrbit: false, brightness: 0.7 },
+          venus:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.05 },
+          earth:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.1 },
+          mars:    { visible: true,  participates: true,  showOrbit: true,  brightness: 1.0 },
+          jupiter: { visible: false, participates: false, showOrbit: false, brightness: 0.8 }
+        }
+      },
+      minimal: {
+        name: 'Minimal',
+        speedIndex: 2,
+        decayIndex: 3,
+        densityIndex: 0,
+        connectionMode: 'all',
+        colorMode: 'monochrome',
+        planets: {
+          mercury: { visible: true,  participates: true,  showOrbit: true,  brightness: 0.9 },
+          venus:   { visible: false, participates: false, showOrbit: true,  brightness: 0.7 },
+          earth:   { visible: true,  participates: true,  showOrbit: true,  brightness: 1.1 },
+          mars:    { visible: true,  participates: true,  showOrbit: true,  brightness: 1.0 },
+          jupiter: { visible: false, participates: false, showOrbit: false, brightness: 0.7 }
+        }
+      },
+      cosmosQuartet: {
+        name: 'Cosmos Quartet',
+        speedIndex: 3,
+        decayIndex: 4,
+        densityIndex: 3,
+        connectionMode: 'all',
+        colorMode: 'multicolor',
+        planets: {
+          mercury: { visible: true, participates: false, showOrbit: true, brightness: 0.8 },
+          venus:   { visible: true, participates: true,  showOrbit: true, brightness: 1.0 },
+          earth:   { visible: true, participates: true,  showOrbit: true, brightness: 1.05 },
+          mars:    { visible: true, participates: true,  showOrbit: true, brightness: 0.95 },
+          jupiter: { visible: true, participates: true,  showOrbit: true, brightness: 0.95 }
+        }
+      }
+    };
+
+    /**
+     * Computes a planet's heliocentric position in AU at a given simulation radian time.
+     */
+    function getPlanetPositionAU(planet, simRad) {
+      const theta = planet.initialAngle + simRad * planet.freq;
+      const a = planet.au;
+      const e = planet.eccentricity || 0;
+      const b = a * Math.sqrt(1 - e * e);
+      // Center remains harmonically balanced while retaining subtle organic orbital breath
+      return {
+        xAu: a * Math.cos(theta) - (a * e * 0.35),
+        yAu: b * Math.sin(theta),
+        theta
+      };
+    }
+
+    /**
+     * Computes screen pixel coordinates from AU coordinates based on current viewport & camera zoom.
+     */
+    function getViewportMetrics() {
+      // Shift center slightly left on desktop so the floating right panel never crowds the Sun
+      const isDesktop = state.width >= 768;
+      const panelCollapsed = document.getElementById('controlPanelBody').classList.contains('hidden');
+      const offsetX = (isDesktop && !panelCollapsed) ? -145 : 0;
+      const centerX = state.width * 0.5 + offsetX + state.panX;
+      const centerY = state.height * 0.5 + state.panY;
+
+      const availableWidth = isDesktop && !panelCollapsed ? state.width - 340 : state.width;
+      const minDim = Math.min(availableWidth, state.height);
+      const maxPixelRadius = minDim * 0.43 * state.userZoom;
+      const pxPerAu = maxPixelRadius / Math.max(0.4, state.autoScaleAu);
+
+      return { centerX, centerY, pxPerAu };
+    }
+
+    /**
+     * Updates target camera scale based on outermost visible or participating planet.
+     */
+    function updateTargetScaleAU() {
+      let maxAu = 1.0;
+      for (const p of state.planets) {
+        if (p.visible || p.participates || p.showOrbit) {
+          if (p.au > maxAu) maxAu = p.au;
+        }
+      }
+      // In Earth-Venus classic mode, frame tightly around Earth if Mars/Jupiter aren't participating
+      if (state.connectionMode === 'earthVenus') {
+        const outerShown = state.planets.filter(p => (p.id === 'mars' || p.id === 'jupiter') && p.visible);
+        if (outerShown.length === 0) maxAu = 1.08;
+      }
+      state.targetScaleAu = maxAu;
+    }
+
+    /**
+     * Generates procedural starfield and renders static deep-space background canvas.
+     */
+    function initStarfield() {
+      const count = Math.floor((state.width * state.height) / 3800);
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        const tintRoll = Math.random();
+        let color = '226, 232, 240';
+        if (tintRoll > 0.85) color = '186, 230, 253';      // Blue-white giant
+        else if (tintRoll > 0.70) color = '254, 240, 138'; // Soft warm gold
+        else if (tintRoll > 0.60) color = '253, 164, 175'; // Faint rose
+
+        stars.push({
+          xRatio: Math.random(),
+          yRatio: Math.random(),
+          size: Math.random() * 1.35 + 0.3,
+          alpha: Math.random() * 0.55 + 0.12,
+          color
+        });
+      }
+      renderBackgroundCanvas();
+    }
+
+    function renderBackgroundCanvas() {
+      const w = state.width;
+      const h = state.height;
+      bgCtx.save();
+      bgCtx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+
+      // Deep space void base
+      bgCtx.fillStyle = '#03050a';
+      bgCtx.fillRect(0, 0, w, h);
+
+      const { centerX, centerY, pxPerAu } = getViewportMetrics();
+
+      // Subtle multi-layered cosmic nebula glow centered on the Sun
+      const nebulaRadius = Math.max(w, h) * 0.7;
+      const nebGrad = bgCtx.createRadialGradient(centerX, centerY, 5, centerX, centerY, nebulaRadius);
+      if (state.colorMode === 'pastel') {
+        nebGrad.addColorStop(0, 'rgba(56, 36, 82, 0.22)');
+        nebGrad.addColorStop(0.35, 'rgba(20, 35, 68, 0.14)');
+        nebGrad.addColorStop(0.7, 'rgba(8, 12, 26, 0.06)');
+        nebGrad.addColorStop(1, 'rgba(3, 5, 10, 0)');
+      } else if (state.colorMode === 'monochrome') {
+        nebGrad.addColorStop(0, 'rgba(30, 41, 59, 0.22)');
+        nebGrad.addColorStop(0.4, 'rgba(15, 23, 42, 0.10)');
+        nebGrad.addColorStop(1, 'rgba(3, 5, 10, 0)');
+      } else {
+        nebGrad.addColorStop(0, 'rgba(38, 28, 16, 0.18)');
+        nebGrad.addColorStop(0.28, 'rgba(14, 30, 58, 0.16)');
+        nebGrad.addColorStop(0.65, 'rgba(9, 13, 28, 0.08)');
+        nebGrad.addColorStop(1, 'rgba(3, 5, 10, 0)');
+      }
+      bgCtx.fillStyle = nebGrad;
+      bgCtx.fillRect(0, 0, w, h);
+
+      // Draw stars
+      for (const s of stars) {
+        const sx = s.xRatio * w;
+        const sy = s.yRatio * h;
+        bgCtx.fillStyle = `rgba(${s.color}, ${s.alpha})`;
+        bgCtx.beginPath();
+        bgCtx.arc(sx, sy, s.size, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+
+      bgCtx.restore();
+    }
+
+    /**
+     * Clears the persistent Infinity layer and redraws any baked segments if needed.
+     */
+    function clearPersistCanvas() {
+      persistCtx.save();
+      persistCtx.setTransform(1, 0, 0, 1, 0, 0);
+      persistCtx.clearRect(0, 0, persistCanvas.width, persistCanvas.height);
+      persistCtx.restore();
+    }
+
+    /**
+     * Determines which pairs of planets should be connected at the current sample step.
+     */
+    function getActivePairsIndices() {
+      const pairs = [];
+      if (state.connectionMode === 'earthVenus') {
+        const vIdx = state.planets.findIndex(p => p.id === 'venus');
+        const eIdx = state.planets.findIndex(p => p.id === 'earth');
+        if (vIdx !== -1 && eIdx !== -1 && state.planets[vIdx].participates && state.planets[eIdx].participates) {
+          pairs.push([vIdx, eIdx]);
+        }
+        return pairs;
+      }
+
+      if (state.connectionMode === 'pairs') {
+        for (let i = 0; i < state.planets.length; i++) {
+          for (let j = i + 1; j < state.planets.length; j++) {
+            const p1 = state.planets[i];
+            const p2 = state.planets[j];
+            const key = `${p1.id}-${p2.id}`;
+            if (state.selectedPairs.has(key) && p1.participates && p2.participates) {
+              pairs.push([i, j]);
+            }
+          }
+        }
+        return pairs;
+      }
+
+      // Default 'all' mode: connect every participating planet to every other participating planet
+      for (let i = 0; i < state.planets.length; i++) {
+        if (!state.planets[i].participates) continue;
+        for (let j = i + 1; j < state.planets.length; j++) {
+          if (!state.planets[j].participates) continue;
+          pairs.push([i, j]);
+        }
+      }
+      return pairs;
+    }
+
+    /**
+     * Computes blended RGB color for a chord connecting planet i and planet j.
+     */
+    function getPairColorRGB(p1, p2) {
+      const c1 = p1.colors[state.colorMode];
+      const c2 = p2.colors[state.colorMode];
+      return {
+        r: Math.round((c1.r + c2.r) * 0.5),
+        g: Math.round((c1.g + c2.g) * 0.5),
+        b: Math.round((c1.b + c2.b) * 0.5)
+      };
+    }
+
+    /**
+     * Draws a single segment directly onto the persistent Infinity canvas.
+     */
+    function bakeSegmentToPersistCanvas(seg, metrics) {
+      const p1 = state.planets[seg.p1Idx];
+      const p2 = state.planets[seg.p2Idx];
+      const combinedBrightness = (p1.brightness + p2.brightness) * 0.5;
+      if (combinedBrightness <= 0.01) return;
+
+      const densityCfg = DENSITY_TIERS[state.densityIndex];
+      const alpha = Math.min(0.65, densityCfg.baseAlpha * combinedBrightness * 0.75);
+      const rgb = getPairColorRGB(p1, p2);
+
+      const x1 = metrics.centerX + seg.x1Au * metrics.pxPerAu;
+      const y1 = metrics.centerY + seg.y1Au * metrics.pxPerAu;
+      const x2 = metrics.centerX + seg.x2Au * metrics.pxPerAu;
+      const y2 = metrics.centerY + seg.y2Au * metrics.pxPerAu;
+
+      persistCtx.save();
+      persistCtx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+      persistCtx.globalCompositeOperation = 'lighter';
+      persistCtx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha.toFixed(4)})`;
+      persistCtx.lineWidth = 0.85;
+      persistCtx.beginPath();
+      persistCtx.moveTo(x1, y1);
+      persistCtx.lineTo(x2, y2);
+      persistCtx.stroke();
+      persistCtx.restore();
+    }
+
+    /**
+     * Samples the current positions of active planet pairs and records chord segments.
+     */
+    function sampleCurrentChords(simRad) {
+      const pairs = getActivePairsIndices();
+      if (pairs.length === 0) return;
+
+      const positions = state.planets.map(p => getPlanetPositionAU(p, simRad));
+      const isInfinity = DECAY_TIERS[state.decayIndex].infinite;
+      const metrics = getViewportMetrics();
+
+      for (const [i, j] of pairs) {
+        const seg = {
+          p1Idx: i,
+          p2Idx: j,
+          x1Au: positions[i].xAu,
+          y1Au: positions[i].yAu,
+          x2Au: positions[j].xAu,
+          y2Au: positions[j].yAu,
+          bornRad: simRad
+        };
+        activeSegments.push(seg);
+        state.totalChordsDrawn++;
+      }
+
+      // If in Infinity mode and buffer exceeds threshold, bake oldest segments onto persistCanvas
+      // so FPS remains locked at 60fps forever even with 200,000+ lines!
+      if (isInfinity && activeSegments.length > MAX_LIVE_SEGMENTS) {
+        const overflowCount = activeSegments.length - MAX_LIVE_SEGMENTS;
+        for (let k = 0; k < overflowCount; k++) {
+          bakeSegmentToPersistCanvas(activeSegments[k], metrics);
+        }
+        activeSegments.splice(0, overflowCount);
+      } else if (!isInfinity && activeSegments.length > MAX_LIVE_SEGMENTS * 1.4) {
+        activeSegments.splice(0, activeSegments.length - MAX_LIVE_SEGMENTS);
+      }
+    }
+
+    /**
+     * Main per-frame renderer for orbits, accumulating/decaying trails, Sun, and planets.
+     */
+    function renderScene() {
+      const w = state.width;
+      const h = state.height;
+
+      ctx.save();
+      ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const metrics = getViewportMetrics();
+      const { centerX, centerY, pxPerAu } = metrics;
+
+      // 1. DRAW SUBTLE GLOWING ORBIT PATHS
+      for (const p of state.planets) {
+        if (!p.showOrbit) continue;
+        const aPx = p.au * pxPerAu;
+        const e = p.eccentricity || 0;
+        const bPx = aPx * Math.sqrt(1 - e * e);
+        const cx = centerX - (aPx * e * 0.35);
+
+        const rgb = p.colors[state.colorMode];
+        const orbitAlpha = Math.min(0.32, (0.09 + 0.06 * p.brightness));
+
+        ctx.save();
+        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${orbitAlpha.toFixed(3)})`;
+        ctx.lineWidth = 1.0;
+        ctx.beginPath();
+        ctx.ellipse(cx, centerY, aPx, bPx, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 2. DRAW ACCUMULATED GEOMETRIC LINE TRAILS (BATCHED BY PAIR & ALPHA BUCKETS FOR 60FPS)
+      const decayCfg = DECAY_TIERS[state.decayIndex];
+      const densityCfg = DENSITY_TIERS[state.densityIndex];
+      const isInfinity = decayCfg.infinite;
+      const maxAge = decayCfg.maxAgeRad;
+
+      // Prune expired segments when not in Infinity mode
+      if (!isInfinity && activeSegments.length > 0) {
+        const cutoffRad = state.simRad - maxAge;
+        let firstValidIdx = 0;
+        while (firstValidIdx < activeSegments.length && activeSegments[firstValidIdx].bornRad < cutoffRad) {
+          firstValidIdx++;
+        }
+        if (firstValidIdx > 0) {
+          activeSegments.splice(0, firstValidIdx);
+        }
+      }
+
+      // Group active segments into alpha buckets per planet pair for fast additive rendering
+      const ALPHA_BUCKETS = 14;
+      const buckets = new Map();
+
+      for (let idx = 0; idx < activeSegments.length; idx++) {
+        const seg = activeSegments[idx];
+        const age = state.simRad - seg.bornRad;
+        let lifeRatio = 1.0;
+
+        if (!isInfinity) {
+          if (age >= maxAge) continue;
+          // Smooth cosine-eased decay curve so trails dissolve silkily without abrupt cutoffs
+          const t = age / maxAge;
+          lifeRatio = Math.pow(1 - t, 1.45);
+        }
+
+        const bucketIdx = isInfinity
+          ? (ALPHA_BUCKETS - 1)
+          : Math.max(0, Math.min(ALPHA_BUCKETS - 1, Math.floor(lifeRatio * ALPHA_BUCKETS)));
+
+        const key = (seg.p1Idx << 8) | (seg.p2Idx << 4) | bucketIdx;
+        let list = buckets.get(key);
+        if (!list) {
+          list = [];
+          buckets.set(key, list);
+        }
+        list.push(seg);
+      }
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 0.85;
+
+      for (const [key, segList] of buckets.entries()) {
+        const p1Idx = (key >> 8) & 0xF;
+        const p2Idx = (key >> 4) & 0xF;
+        const bucketIdx = key & 0xF;
+
+        const p1 = state.planets[p1Idx];
+        const p2 = state.planets[p2Idx];
+        const combinedBrightness = (p1.brightness + p2.brightness) * 0.5;
+        if (combinedBrightness <= 0.01) continue;
+
+        const bucketFactor = (bucketIdx + 0.5) / ALPHA_BUCKETS;
+        const finalAlpha = Math.min(0.75, densityCfg.baseAlpha * combinedBrightness * bucketFactor * (isInfinity ? 0.78 : 1.0));
+        if (finalAlpha < 0.003) continue;
+
+        const rgb = getPairColorRGB(p1, p2);
+        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${finalAlpha.toFixed(4)})`;
+
+        ctx.beginPath();
+        for (let k = 0; k < segList.length; k++) {
+          const s = segList[k];
+          ctx.moveTo(centerX + s.x1Au * pxPerAu, centerY + s.y1Au * pxPerAu);
+          ctx.lineTo(centerX + s.x2Au * pxPerAu, centerY + s.y2Au * pxPerAu);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 3. DRAW LIVE INSTANTANEOUS CHORD CONNECTIONS (SUBTLE LUMINOUS FILAMENT)
+      const currentPositions = state.planets.map(p => {
+        const pos = getPlanetPositionAU(p, state.simRad);
+        return {
+          x: centerX + pos.xAu * pxPerAu,
+          y: centerY + pos.yAu * pxPerAu
+        };
+      });
+
+      const activePairs = getActivePairsIndices();
+      if (activePairs.length > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        for (const [i, j] of activePairs) {
+          const p1 = state.planets[i];
+          const p2 = state.planets[j];
+          const b = (p1.brightness + p2.brightness) * 0.5;
+          if (b <= 0.02) continue;
+          const rgb = getPairColorRGB(p1, p2);
+
+          ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${(0.28 * b).toFixed(3)})`;
+          ctx.lineWidth = 1.1;
+          ctx.beginPath();
+          ctx.moveTo(currentPositions[i].x, currentPositions[i].y);
+          ctx.lineTo(currentPositions[j].x, currentPositions[j].y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // 4. DRAW THE SUN WARMLY GLOWING AT THE CENTER
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      const sunPulse = 1 + 0.04 * Math.sin(performance.now() * 0.0025);
+      const sunOuterRadius = 34 * sunPulse;
+
+      const sunGlow = ctx.createRadialGradient(centerX, centerY, 1.5, centerX, centerY, sunOuterRadius);
+      sunGlow.addColorStop(0, 'rgba(255, 251, 235, 1)');
+      sunGlow.addColorStop(0.18, 'rgba(253, 224, 71, 0.85)');
+      sunGlow.addColorStop(0.45, 'rgba(245, 158, 11, 0.32)');
+      sunGlow.addColorStop(0.75, 'rgba(217, 119, 6, 0.08)');
+      sunGlow.addColorStop(1, 'rgba(217, 119, 6, 0)');
+
+      ctx.fillStyle = sunGlow;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, sunOuterRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Crisp solar photosphere core
+      ctx.fillStyle = '#fffbeb';
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, 5.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 5. DRAW SOFTLY GLOWING PLANETS
+      ctx.save();
+      for (let i = 0; i < state.planets.length; i++) {
+        const p = state.planets[i];
+        if (!p.visible) continue;
+
+        const pos = currentPositions[i];
+        const rgb = p.colors[state.colorMode];
+        const b = Math.max(0.15, p.brightness);
+        const haloRadius = p.radiusPx * (3.6 + b * 1.4);
+
+        // Soft outer planetary bloom
+        ctx.globalCompositeOperation = 'lighter';
+        const pGlow = ctx.createRadialGradient(pos.x, pos.y, 0.5, pos.x, pos.y, haloRadius);
+        pGlow.addColorStop(0, `rgba(255, 255, 255, ${Math.min(1, 0.95 * b)})`);
+        pGlow.addColorStop(0.25, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.min(1, 0.75 * b)})`);
+        pGlow.addColorStop(0.6, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.min(1, 0.22 * b)})`);
+        pGlow.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0)`);
+
+        ctx.fillStyle = pGlow;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, haloRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Crisp luminous planet dot core
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = `rgb(${Math.min(255, rgb.r + 45)}, ${Math.min(255, rgb.g + 45)}, ${Math.min(255, rgb.b + 45)})`;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, p.radiusPx * 0.72, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.restore();
+    }
+
+    /**
+     * Pre-warms the simulation by running ~2.2 Earth orbits on startup or preset change
+     * so an intricate, satisfying geometric pattern is already blooming immediately.
+     */
+    function prewarmSimulation(radiansToAdvance = Math.PI * 3.2) {
+      const interval = DENSITY_TIERS[state.densityIndex].sampleIntervalRad;
+      const steps = Math.floor(radiansToAdvance / interval);
+      for (let s = 0; s < steps; s++) {
+        state.simRad += interval;
+        state.lastSampleRad = state.simRad;
+        sampleCurrentChords(state.simRad);
+      }
+      updateTelemetryUI();
+    }
+
+    function updateTelemetryUI() {
+      const years = (state.simRad / (Math.PI * 2)).toFixed(1);
+      document.getElementById('statYears').textContent = years;
+      document.getElementById('statChords').textContent = state.totalChordsDrawn.toLocaleString();
+    }
+
+    let lastFrameTime = performance.now();
+
+    function animate(now) {
+      const dt = Math.min(0.05, (now - lastFrameTime) / 1000);
+      lastFrameTime = now;
+
+      // Smoothly interpolate camera scale toward target outermost planet AU
+      const scaleDiff = state.targetScaleAu - state.autoScaleAu;
+      if (Math.abs(scaleDiff) > 0.001) {
+        state.autoScaleAu += scaleDiff * Math.min(1, dt * 6.5);
+        // If in Infinity mode and camera scale is animating, re-bake or keep segments in live buffer
+      }
+
+      if (state.isPlaying) {
+        const speedCfg = SPEED_TIERS[state.speedIndex];
+        const densityCfg = DENSITY_TIERS[state.densityIndex];
+        const totalDeltaRad = speedCfg.radPerSec * dt;
+
+        // Advance simulation and trigger chord sampling at exact harmonic intervals
+        const targetRad = state.simRad + totalDeltaRad;
+        const sampleInterval = densityCfg.sampleIntervalRad;
+
+        while (state.lastSampleRad + sampleInterval <= targetRad) {
+          state.lastSampleRad += sampleInterval;
+          sampleCurrentChords(state.lastSampleRad);
+        }
+
+        state.simRad = targetRad;
+        updateTelemetryUI();
+      }
+
+      renderScene();
+      requestAnimationFrame(animate);
+    }
+
+    /**
+     * Renders the interactive controls for each planet (Mercury -> Jupiter).
+     */
+    function renderPlanetMixerUI() {
+      const container = document.getElementById('planetControlsContainer');
+      container.innerHTML = '';
+
+      state.planets.forEach((p, idx) => {
+        const rgb = p.colors[state.colorMode];
+        const colorHex = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
+        const row = document.createElement('div');
+        row.className = 'p-2.5 rounded-xl bg-slate-950/50 border border-white/[0.06] flex flex-col gap-2 transition hover:border-white/[0.12]';
+
+        row.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${colorHex}; box-shadow: 0 0 8px ${colorHex};"></span>
+              <span class="font-medium text-slate-200 text-xs">${p.name}</span>
+              <span class="text-[10px] font-mono-code text-slate-500">${p.ratioText}</span>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <!-- Show/Hide Planet Dot Toggle -->
+              <button data-action="visible" data-idx="${idx}" title="Show / Hide Planet"
+                class="icon-toggle ${p.visible ? 'active' : 'inactive'} p-1.5 rounded-lg border text-[10px] flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+
+              <!-- Participates in Line Drawing Toggle -->
+              <button data-action="participates" data-idx="${idx}" title="Participates in Line Drawing"
+                class="icon-toggle ${p.participates ? 'active' : 'inactive'} p-1.5 rounded-lg border text-[10px] flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
+              </button>
+
+              <!-- Orbit Visibility Toggle -->
+              <button data-action="showOrbit" data-idx="${idx}" title="Show / Hide Orbit Path"
+                class="icon-toggle ${p.showOrbit ? 'active' : 'inactive'} p-1.5 rounded-lg border text-[10px] flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" stroke-dasharray="3 2" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Brightness / Dimmer Slider -->
+          <div class="flex items-center gap-2.5 pl-1">
+            <span class="text-[10px] text-slate-400 w-14 shrink-0">Glow <strong id="brightVal-${idx}" class="text-slate-300 font-mono-code font-normal">${Math.round(p.brightness * 100)}%</strong></span>
+            <input type="range" min="0" max="1.5" step="0.05" value="${p.brightness}"
+              data-action="brightness" data-idx="${idx}" class="mini-slider w-full" />
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      // Attach listeners to planet buttons & sliders
+      container.querySelectorAll('button[data-action]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.getAttribute('data-idx'));
+          const action = btn.getAttribute('data-action');
+          state.planets[idx][action] = !state.planets[idx][action];
+          updateTargetScaleAU();
+          renderPlanetMixerUI();
+        });
+      });
+
+      container.querySelectorAll('input[data-action="brightness"]').forEach(slider => {
+        slider.addEventListener('input', (e) => {
+          const idx = Number(slider.getAttribute('data-idx'));
+          const val = parseFloat(e.target.value);
+          state.planets[idx].brightness = val;
+          const label = document.getElementById(`brightVal-${idx}`);
+          if (label) label.textContent = `${Math.round(val * 100)}%`;
+        });
+      });
+    }
+
+    /**
+     * Renders the interactive pair chips for the "Focus Pairs" connection mode.
+     */
+    function renderFocusPairsUI() {
+      const container = document.getElementById('pairChipsContainer');
+      container.innerHTML = '';
+
+      for (let i = 0; i < state.planets.length; i++) {
+        for (let j = i + 1; j < state.planets.length; j++) {
+          const p1 = state.planets[i];
+          const p2 = state.planets[j];
+          const key = `${p1.id}-${p2.id}`;
+          const isSelected = state.selectedPairs.has(key);
+
+          const chip = document.createElement('button');
+          chip.className = `px-2 py-1 rounded-lg text-[10px] font-medium border transition ${
+            isSelected
+              ? 'bg-sky-500/25 text-sky-200 border-sky-400/50 shadow-[0_0_10px_rgba(56,189,248,0.2)]'
+              : 'bg-white/[0.03] text-slate-400 border-white/10 hover:text-slate-200'
+          }`;
+          chip.textContent = `${p1.name.slice(0, 3)}–${p2.name.slice(0, 3)}`;
+          chip.title = `Connect ${p1.name} & ${p2.name}`;
+
+          chip.addEventListener('click', () => {
+            if (state.selectedPairs.has(key)) {
+              state.selectedPairs.delete(key);
+            } else {
+              state.selectedPairs.add(key);
+              // Ensure both planets participate when user explicitly selects their pair
+              p1.participates = true;
+              p2.participates = true;
+              renderPlanetMixerUI();
+            }
+            renderFocusPairsUI();
+          });
+
+          container.appendChild(chip);
+        }
+      }
+    }
+
+    /**
+     * Synchronizes all sliders, badges, and buttons with the current `state`.
+     */
+    function syncControlsUI() {
+      // Speed
+      const speedSlider = document.getElementById('speedSlider');
+      speedSlider.value = state.speedIndex;
+      document.getElementById('speedLabel').textContent = SPEED_TIERS[state.speedIndex].label;
+
+      // Decay / Persistence
+      const decaySlider = document.getElementById('decaySlider');
+      decaySlider.value = state.decayIndex;
+      document.getElementById('decayLabel').textContent = DECAY_TIERS[state.decayIndex].label;
+
+      // Density
+      const densitySlider = document.getElementById('densitySlider');
+      densitySlider.value = state.densityIndex;
+      document.getElementById('densityLabel').textContent = DENSITY_TIERS[state.densityIndex].label;
+
+      // Connection mode buttons
+      document.querySelectorAll('.conn-mode-btn').forEach(btn => {
+        const mode = btn.getAttribute('data-conn');
+        if (mode === state.connectionMode) {
+          btn.className = 'conn-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition bg-sky-500/20 text-sky-200 border border-sky-400/30';
+        } else {
+          btn.className = 'conn-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent';
+        }
+      });
+
+      const focusDrawer = document.getElementById('focusPairsDrawer');
+      if (state.connectionMode === 'pairs') {
+        focusDrawer.classList.remove('hidden');
+        renderFocusPairsUI();
+      } else {
+        focusDrawer.classList.add('hidden');
+      }
+
+      // Color mode buttons
+      document.querySelectorAll('.color-mode-btn').forEach(btn => {
+        const mode = btn.getAttribute('data-color');
+        if (mode === state.colorMode) {
+          btn.className = 'color-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition bg-sky-500/20 text-sky-200 border border-sky-400/30';
+        } else {
+          btn.className = 'color-mode-btn py-1.5 px-2 rounded-lg text-[11px] font-medium transition text-slate-400 hover:text-slate-200 border border-transparent';
+        }
+      });
+
+      // Preset highlight
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        const key = btn.getAttribute('data-preset');
+        const spans = btn.querySelectorAll('span');
+        if (key === state.activePreset) {
+          btn.className = 'preset-btn text-left px-3 py-2 rounded-xl border border-sky-400/40 bg-sky-500/15 transition flex flex-col';
+          if (spans[0]) spans[0].className = 'font-medium text-sky-200 text-xs';
+          if (spans[1]) spans[1].className = 'text-[10px] text-sky-300/80';
+        } else {
+          btn.className = 'preset-btn text-left px-3 py-2 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition flex flex-col';
+          if (spans[0]) spans[0].className = 'font-medium text-slate-200 text-xs';
+          if (spans[1]) spans[1].className = 'text-[10px] text-slate-400';
+        }
+      });
+
+      renderPlanetMixerUI();
+    }
+
+    /**
+     * Resets all trails and restarts the simulation from initial orbital positions.
+     */
+    function resetSimulation(withPrewarm = false) {
+      state.simRad = 0;
+      state.lastSampleRad = 0;
+      state.totalChordsDrawn = 0;
+      activeSegments = [];
+      clearPersistCanvas();
+      if (withPrewarm) {
+        prewarmSimulation(Math.PI * 2.2);
+      } else {
+        sampleCurrentChords(0);
+        updateTelemetryUI();
+      }
+    }
+
+    /**
+     * Applies a named preset configuration and cleanly restarts the visual pattern.
+     */
+    function applyPreset(presetKey, shouldPrewarm = false) {
+      const preset = PRESETS[presetKey];
+      if (!preset) return;
+
+      state.activePreset = presetKey;
+      document.getElementById('activePresetBadge').textContent = preset.name;
+
+      state.speedIndex = preset.speedIndex;
+      state.decayIndex = preset.decayIndex;
+      state.densityIndex = preset.densityIndex;
+      state.connectionMode = preset.connectionMode;
+      state.colorMode = preset.colorMode;
+
+      for (const p of state.planets) {
+        const cfg = preset.planets[p.id];
+        if (cfg) {
+          p.visible = cfg.visible;
+          p.participates = cfg.participates;
+          p.showOrbit = cfg.showOrbit;
+          p.brightness = cfg.brightness;
+        }
+      }
+
+      updateTargetScaleAU();
+      state.autoScaleAu = state.targetScaleAu;
+      renderBackgroundCanvas();
+      syncControlsUI();
+      resetSimulation(shouldPrewarm);
+    }
+
+    function handleResize() {
+      state.width = window.innerWidth;
+      state.height = window.innerHeight;
+      state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      [bgCanvas, persistCanvas, interactionCanvas].forEach(c => {
+        c.width = Math.floor(state.width * state.dpr);
+        c.height = Math.floor(state.height * state.dpr);
+      });
+
+      initStarfield();
+      clearPersistCanvas();
+    }
+
+    function setupEventListeners() {
+      window.addEventListener('resize', handleResize);
+
+      // Play / Pause
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      playPauseBtn.addEventListener('click', () => {
+        state.isPlaying = !state.isPlaying;
+        document.getElementById('playIcon').classList.toggle('hidden', state.isPlaying);
+        document.getElementById('pauseIcon').classList.toggle('hidden', !state.isPlaying);
+        document.getElementById('playPauseText').textContent = state.isPlaying ? 'Pause' : 'Play';
+      });
+
+      // Reset
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        resetSimulation(false);
+      });
+
+      // Collapse / Expand Panel
+      const collapseBtn = document.getElementById('collapsePanelBtn');
+      const panelBody = document.getElementById('controlPanelBody');
+      const collapseIcon = document.getElementById('collapseIcon');
+      collapseBtn.addEventListener('click', () => {
+        const isHidden = panelBody.classList.toggle('hidden');
+        collapseIcon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+        renderBackgroundCanvas();
+      });
+
+      // Snapshot Export (Merges all 3 canvas layers into a crisp downloadable PNG)
+      document.getElementById('snapshotBtn').addEventListener('click', () => {
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = bgCanvas.width;
+        exportCanvas.height = bgCanvas.height;
+        const exCtx = exportCanvas.getContext('2d');
+
+        exCtx.drawImage(bgCanvas, 0, 0);
+        exCtx.drawImage(persistCanvas, 0, 0);
+        exCtx.drawImage(interactionCanvas, 0, 0);
+
+        const link = document.createElement('a');
+        link.download = `planetary-harmonics-${Date.now()}.png`;
+        link.href = exportCanvas.toDataURL('image/png');
+        link.click();
+      });
+
+      // Sliders
+      document.getElementById('speedSlider').addEventListener('input', (e) => {
+        state.speedIndex = Number(e.target.value);
+        document.getElementById('speedLabel').textContent = SPEED_TIERS[state.speedIndex].label;
+      });
+
+      document.getElementById('decaySlider').addEventListener('input', (e) => {
+        const prevInfinite = DECAY_TIERS[state.decayIndex].infinite;
+        state.decayIndex = Number(e.target.value);
+        const nowInfinite = DECAY_TIERS[state.decayIndex].infinite;
+        document.getElementById('decayLabel').textContent = DECAY_TIERS[state.decayIndex].label;
+
+        // If leaving Infinity mode, clear any permanently baked layer so trails can decay naturally
+        if (prevInfinite && !nowInfinite) {
+          clearPersistCanvas();
+        }
+      });
+
+      document.getElementById('densitySlider').addEventListener('input', (e) => {
+        state.densityIndex = Number(e.target.value);
+        document.getElementById('densityLabel').textContent = DENSITY_TIERS[state.densityIndex].label;
+      });
+
+      // Preset buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const presetKey = btn.getAttribute('data-preset');
+          applyPreset(presetKey, false);
+        });
+      });
+
+      // Connection mode buttons
+      document.querySelectorAll('.conn-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.connectionMode = btn.getAttribute('data-conn');
+          if (state.connectionMode === 'earthVenus') {
+            const v = state.planets.find(p => p.id === 'venus');
+            const e = state.planets.find(p => p.id === 'earth');
+            if (v) { v.visible = true; v.participates = true; }
+            if (e) { e.visible = true; e.participates = true; }
+          }
+          updateTargetScaleAU();
+          syncControlsUI();
+        });
+      });
+
+      // Invert Focus Pairs button
+      document.getElementById('toggleAllPairsBtn').addEventListener('click', () => {
+        for (let i = 0; i < state.planets.length; i++) {
+          for (let j = i + 1; j < state.planets.length; j++) {
+            const key = `${state.planets[i].id}-${state.planets[j].id}`;
+            if (state.selectedPairs.has(key)) state.selectedPairs.delete(key);
+            else state.selectedPairs.add(key);
+          }
+        }
+        renderFocusPairsUI();
+      });
+
+      // Color mode buttons
+      document.querySelectorAll('.color-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.colorMode = btn.getAttribute('data-color');
+          renderBackgroundCanvas();
+          syncControlsUI();
+        });
+      });
+
+      // Interactive Zoom & Pan on Canvas
+      const recenterBtn = document.getElementById('recenterBtn');
+
+      interactionCanvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+        state.userZoom = Math.max(0.35, Math.min(4.5, state.userZoom * zoomFactor));
+        clearPersistCanvas();
+        recenterBtn.classList.toggle('hidden', Math.abs(state.userZoom - 1) < 0.02 && Math.hypot(state.panX, state.panY) < 5);
+      }, { passive: false });
+
+      interactionCanvas.addEventListener('pointerdown', (e) => {
+        state.isDragging = true;
+        state.dragStartX = e.clientX - state.panX;
+        state.dragStartY = e.clientY - state.panY;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!state.isDragging) return;
+        state.panX = e.clientX - state.dragStartX;
+        state.panY = e.clientY - state.dragStartY;
+        clearPersistCanvas();
+        recenterBtn.classList.remove('hidden');
+      });
+
+      window.addEventListener('pointerup', () => {
+        state.isDragging = false;
+      });
+
+      recenterBtn.addEventListener('click', () => {
+        state.userZoom = 1.0;
+        state.panX = 0;
+        state.panY = 0;
+        clearPersistCanvas();
+        recenterBtn.classList.add('hidden');
+        renderBackgroundCanvas();
+      });
+    }
+
+    // --- INITIALIZE ON LOAD ---
+    window.onload = function () {
+      handleResize();
+      setupEventListeners();
+      // Start with the pleasing default preset (Venus, Earth, Mars, Jupiter enabled)
+      applyPreset('cosmosQuartet', true);
+      lastFrameTime = performance.now();
+      requestAnimationFrame(animate);
+    };
+  </script>
+</body>
+</html>
+<!--
+Version history
+20261016000000.0  Initial copy of Planetary Harmonics, served on the VPS at /planets/ via tailscale serve.
+-->
